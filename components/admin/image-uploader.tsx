@@ -15,7 +15,7 @@ const ACCEPT = "image/jpeg,image/png,image/webp,image/avif";
 
 type ImageUploaderProps = {
   value: string;
-  bucket?: string;
+  bucket_id ?: string;
   folder?: string;
   onChange: (value: string) => void;
   label?: string;
@@ -23,7 +23,7 @@ type ImageUploaderProps = {
 
 export function ImageUploader({
   value,
-  bucket = "image-project",
+  bucket_id  = "image-project",
   folder = "homepage",
   onChange,
   label = "Hình ảnh",
@@ -57,7 +57,7 @@ export function ImageUploader({
       const filePath = `${folder}/${crypto.randomUUID()}.${extension}`;
 
       const { error: uploadError } = await supabase.storage
-        .from(bucket)
+        .from(bucket_id )
         .upload(filePath, file, {
           cacheControl: "31536000",
           upsert: false,
@@ -71,7 +71,7 @@ export function ImageUploader({
       const {
         data: { publicUrl },
       } = supabase.storage
-        .from(bucket)
+        .from(bucket_id )
         .getPublicUrl(filePath);
 
       if (!publicUrl) {
@@ -88,7 +88,7 @@ export function ImageUploader({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "Không thể upload ảnh. Hãy kiểm tra bucket Supabase và quyền truy cập.",
+          : "Không thể upload ảnh. Hãy kiểm tra bucket_id  Supabase và quyền truy cập.",
       );
     } finally {
       setUploading(false);
@@ -110,7 +110,7 @@ export function ImageUploader({
        *
        * Ta lấy lại path để xóa file trong Storage.
        */
-      const publicMarker = `/storage/v1/object/public/${bucket}/`;
+      const publicMarker = `/storage/v1/object/public/${bucket_id }/`;
 
       if (value.startsWith("http://") || value.startsWith("https://")) {
         const markerIndex = value.indexOf(publicMarker);
@@ -121,7 +121,7 @@ export function ImageUploader({
           );
 
           const { error: removeError } = await supabase.storage
-            .from(bucket)
+            .from(bucket_id )
             .remove([filePath]);
 
           if (removeError) {
@@ -133,7 +133,7 @@ export function ImageUploader({
         }
       } else {
         const { error: removeError } = await supabase.storage
-          .from(bucket)
+          .from(bucket_id )
           .remove([value]);
 
         if (removeError) {

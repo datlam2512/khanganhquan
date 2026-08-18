@@ -598,7 +598,7 @@ export default function Projects() {
 
           <ImageUploader
             value={form.cover_image_path}
-            bucket="project-images"
+            bucket_id ="project-images"
             folder="projects/covers"
             label="Ảnh cover"
             onChange={(value) =>
@@ -622,7 +622,7 @@ export default function Projects() {
                 >
                   <ImageUploader
                     value={imagePath}
-                    bucket="project-images"
+                    bucket_id ="project-images"
                     folder="projects/gallery"
                     label={`Ảnh ${index + 1}`}
                     onChange={(value) =>
