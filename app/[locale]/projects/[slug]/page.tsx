@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLocale, getDictionary } from "@/lib/i18n";
-import { getProject } from "@/lib/data";
+import { getProject, getProjects } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { ProjectGallery } from "@/components/public/project-gallery";
 
@@ -43,6 +43,12 @@ export default async function ProjectDetail({
   const project = await getProject(raw.slug);
   if (!project) notFound();
 
+  const allProjects = await getProjects();
+
+  const relatedProjects = allProjects
+    .filter((item) => item.id !== project.id && item.published)
+    .slice(0, 3);
+
   const title = locale === "vi" ? project.title : project.titleEn;
   const description =
     locale === "vi" ? project.description : project.descriptionEn;
@@ -61,10 +67,87 @@ export default async function ProjectDetail({
         </div>
       </section>
 
-      <section className="pb-20">
+      <section className="pb-24">
         <div className="container-kaq max-w-[1180px]">
-          <div className="grid gap-6 md:grid-cols-2"></div>
-          <div className="mt-8 !text-[#EEEEEE]">
+          {/* Related projects */}
+          {relatedProjects.length > 0 && (
+            <div className="border-t border-[#e4ebe6] pt-16">
+              <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <div className="eyebrow">
+                    {locale === "vi" ? "Khám phá thêm" : "Explore more"}
+                  </div>
+
+                  <h2 className="heading-display mt-3 text-3xl font-extrabold tracking-[-.04em] text-[#173826] md:text-4xl">
+                    {locale === "vi" ? "Các dự án khác" : "Other projects"}
+                  </h2>
+
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-[#66746d]">
+                    {locale === "vi"
+                      ? "Khám phá thêm những dự án khác của Khang Anh Quân."
+                      : "Explore more projects completed by Khang Anh Quân."}
+                  </p>
+                </div>
+
+                <Button href={`/${locale}/projects`} variant="outline">
+                  {locale === "vi" ? "Xem tất cả dự án" : "View all projects"}
+                </Button>
+              </div>
+
+              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {relatedProjects.map((item) => {
+                  const itemTitle = locale === "vi" ? item.title : item.titleEn;
+
+                  const itemDescription =
+                    locale === "vi" ? item.description : item.descriptionEn;
+
+                  return (
+                    <a
+                      key={item.id}
+                      href={`/${locale}/projects/${item.slug}`}
+                      className="group overflow-hidden rounded-[24px] border border-[#dfe8e2] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(20,35,27,.08)]"
+                    >
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#edf3ef]">
+                        {item.coverImage && (
+                          <img
+                            src={item.coverImage}
+                            alt={itemTitle}
+                            className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
+                          />
+                        )}
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
+
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <div className="text-[10px] font-extrabold uppercase tracking-[.14em] text-white/75">
+                            {item.location}
+                            {item.year ? ` · ${item.year}` : ""}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-5">
+                        <h3 className="text-lg font-extrabold leading-tight text-[#173826]">
+                          {itemTitle}
+                        </h3>
+
+                        <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#68756e]">
+                          {itemDescription}
+                        </p>
+
+                        <div className="mt-5 text-sm font-extrabold text-[#11823b]">
+                          {locale === "vi" ? "Xem dự án →" : "View project →"}
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Contact */}
+          <div className="mt-14">
             <Button href={`/${locale}/contact#contact-form`}>
               {t.actions.contact}
             </Button>
