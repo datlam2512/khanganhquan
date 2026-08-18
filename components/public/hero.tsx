@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Factory, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Locale } from "@/lib/types";
 import { getDictionary } from "@/lib/i18n";
@@ -15,9 +16,9 @@ export type HeroSlide = {
 };
 
 const fallbackSlides: HeroSlide[] = [
-  { id: "demo-1", image: "/banner/BannerKAQ1.jpg", sortOrder: 1, published: true },
-  { id: "demo-2", image: "/banner/BannerKAQ2.jpg", sortOrder: 2, published: true },
-  { id: "demo-3", image: "/banner/BannerKAQ3.jpg", sortOrder: 3, published: true },
+  { id: "demo-1", image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=2200&q=86", sortOrder: 1, published: true },
+  { id: "demo-2", image: "https://images.unsplash.com/photo-1565610222536-ef125c59da2e?auto=format&fit=crop&w=2200&q=86", sortOrder: 2, published: true },
+  { id: "demo-3", image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=2200&q=86", sortOrder: 3, published: true },
 ];
 
 export function Hero({ locale, slides = fallbackSlides }: { locale: Locale; slides?: HeroSlide[] }) {
@@ -28,7 +29,6 @@ export function Hero({ locale, slides = fallbackSlides }: { locale: Locale; slid
 
   const activeSlides = publishedSlides.length > 0 ? publishedSlides : fallbackSlides;
   const [index, setIndex] = useState(0);
-  const safeIndex = index >= activeSlides.length ? 0 : index;
 
   useEffect(() => {
     if (activeSlides.length < 2) return;
@@ -40,13 +40,19 @@ export function Hero({ locale, slides = fallbackSlides }: { locale: Locale; slid
     return () => window.clearInterval(timer);
   }, [activeSlides.length]);
 
+  useEffect(() => {
+    if (index >= activeSlides.length) setIndex(0);
+  }, [activeSlides.length, index]);
+
+  const slide = activeSlides[index];
+
   return (
-    <section className="relative isolate min-h-162.5 overflow-hidden bg-[#0B1D13] text-white">
+    <section className="relative isolate min-h-[650px] overflow-hidden bg-[#0B1D13] text-white">
       {activeSlides.map((item, itemIndex) => (
         <div
           key={item.id}
-          className={`absolute inset-0 transition-opacity duration-1600 ease-out ${itemIndex === safeIndex ? "opacity-100" : "pointer-events-none opacity-0"}`}
-          aria-hidden={itemIndex !== safeIndex}
+          className={`absolute inset-0 transition-opacity duration-[1600ms] ease-out ${itemIndex === index ? "opacity-100" : "pointer-events-none opacity-0"}`}
+          aria-hidden={itemIndex !== index}
         >
           <Image
             src={item.image}
@@ -62,8 +68,12 @@ export function Hero({ locale, slides = fallbackSlides }: { locale: Locale; slid
       <div className="hero-overlay absolute inset-0" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_35%,rgba(35,169,84,.22),transparent_28rem)]" />
 
-      <div className="container-kaq relative z-10 flex min-h-162.5 items-center py-20">
+      <div className="container-kaq relative z-10 flex min-h-[650px] items-center py-20">
         <div className="max-w-4xl">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-2 text-[11px] font-bold tracking-[.04em] text-white/90 backdrop-blur-md">
+            <Factory className="size-4 text-[#A7E3BD]" />
+            {t.hero.badge}
+          </div>
           <div className="eyebrow text-[#A7E3BD]">{t.hero.eyebrow}</div>
           <h1 className="heading-display mt-4 max-w-4xl text-5xl font-extrabold leading-[.98] tracking-[-0.055em] sm:text-6xl lg:text-[5.4rem]">
             {t.hero.title}
@@ -80,9 +90,9 @@ export function Hero({ locale, slides = fallbackSlides }: { locale: Locale; slid
             </Button>
           </div>
           <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/12 pt-5 text-[11px] font-semibold text-white/60">
-            <span>{locale === "vi" ? "Thiết bị công nghiệp" : "Industrial equipment"}</span>
-            <span>{locale === "vi" ? "Ống & van" : "Piping & valves"}</span>
-            <span>{locale === "vi" ? "LPG & PCCC" : "LPG & fire protection"}</span>
+            <span>Industrial equipment</span>
+            <span>Piping &amp; valves</span>
+            <span>LPG &amp; fire protection</span>
           </div>
         </div>
       </div>

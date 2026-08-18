@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { Locale } from "@/lib/types";
 import { getDictionary } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
-
+import NextImage from "next/image";
 export function Header({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const path = usePathname();
@@ -29,7 +29,10 @@ export function Header({ locale }: { locale: Locale }) {
 
   useEffect(() => {
     const onPointer = (event: MouseEvent) => {
-      if (languageRef.current && !languageRef.current.contains(event.target as Node)) {
+      if (
+        languageRef.current &&
+        !languageRef.current.contains(event.target as Node)
+      ) {
         setLanguageOpen(false);
       }
     };
@@ -41,29 +44,49 @@ export function Header({ locale }: { locale: Locale }) {
     <>
       <header className="sticky top-0 z-40 border-b border-[#e6ede8]/90 bg-white/92 backdrop-blur-xl">
         <div className="container-kaq flex min-h-[82px] items-center justify-between gap-6">
-          <Link href={`/${locale}`} className="group flex min-w-0 items-center gap-3.5">
-            <div className="grid size-11 shrink-0 place-items-center rounded-[15px] bg-[#0f813b] text-white shadow-[0_8px_24px_rgba(15,129,59,.18)]">
-              <span className="text-[15px] font-black tracking-tight">KAQ</span>
+          <Link
+            href={`/${locale}`}
+            className="group flex min-w-0 items-center gap-3.5"
+          >
+            <div className="relative size-15 shrink-0">
+              <NextImage
+                src="/logo/logo-green.png"
+                alt="Khang Anh Quân"
+                fill
+                priority
+                className="object-contain"
+              />
             </div>
+
             <div className="hidden sm:block">
-              <div className="font-display text-[15px] font-extrabold tracking-[-.02em] text-[#123b24]">KHANG ANH QUÂN</div>
-              <div className="mt-1 text-[9px] font-bold tracking-[.18em] text-[#7c8982]">{locale === "vi" ? "CÔNG TY TNHH" : "CO., LTD."}</div>
+              <div className="font-display text-[13px] font-extrabold tracking-[-.02em] text-[#123b24]">
+                KHANG ANH QUÂN
+              </div>
+              <div className="mt-1 text-[9px] font-bold tracking-[.18em] text-[#7c8982]">
+                CÔNG TY TNHH
+              </div>
             </div>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-7">
             {nav.map(([href, label]) => {
-              const active = (href === "/" && localPath === "/") || (href !== "/" && localPath.startsWith(href));
+              const active =
+                (href === "/" && localPath === "/") ||
+                (href !== "/" && localPath.startsWith(href));
               return (
                 <Link
                   key={href}
                   href={`/${locale}${href === "/" ? "" : href}`}
                   className={`relative py-2 text-[12px] font-bold tracking-[.01em] transition ${
-                    active ? "text-[#0d6832]" : "text-[#5d6d64] hover:text-[#0d6832]"
+                    active
+                      ? "text-[#0d6832]"
+                      : "text-[#5d6d64] hover:text-[#0d6832]"
                   }`}
                 >
                   {label}
-                  <span className={`absolute inset-x-0 -bottom-1 h-[2px] rounded-full bg-[#17a34a] transition ${active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`} />
+                  <span
+                    className={`absolute inset-x-0 -bottom-1 h-[2px] rounded-full bg-[#17a34a] transition ${active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}
+                  />
                 </Link>
               );
             })}
@@ -89,18 +112,38 @@ export function Header({ locale }: { locale: Locale }) {
                 onClick={() => setLanguageOpen((v) => !v)}
                 className="inline-flex h-10 items-center gap-2 rounded-full border border-[#dfe8e2] bg-white px-3.5 text-[11px] font-extrabold text-[#294a37] transition hover:border-[#bed7c5] hover:bg-[#f4faf6]"
               >
-                <span className="text-base">{locale === "vi" ? "🇻🇳" : "🇬🇧"}</span>
+                <span className="text-base">
+                  {locale === "vi" ? "🇻🇳" : "🇬🇧"}
+                </span>
                 <span>{locale === "vi" ? "Tiếng Việt" : "English"}</span>
-                <ChevronDown className={`size-3.5 transition-transform ${languageOpen ? "rotate-180" : ""}`} />
+                <ChevronDown
+                  className={`size-3.5 transition-transform ${languageOpen ? "rotate-180" : ""}`}
+                />
               </button>
 
               {languageOpen && (
                 <div className="absolute right-0 top-[calc(100%+10px)] w-44 rounded-2xl border border-[#dfe8e2] bg-white p-1.5 shadow-[0_20px_50px_rgba(24,61,39,.13)]">
-                  <Link onClick={() => setLanguageOpen(false)} href={`/vi${localPath}`} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold ${locale === "vi" ? "bg-[#edf8f1] text-[#0d6832]" : "text-[#56665d] hover:bg-[#f6f9f7]"}`}>
-                    <span>🇻🇳</span><span>Tiếng Việt</span>{locale === "vi" && <span className="ml-auto size-1.5 rounded-full bg-[#119444]" />}
+                  <Link
+                    onClick={() => setLanguageOpen(false)}
+                    href={`/vi${localPath}`}
+                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold ${locale === "vi" ? "bg-[#edf8f1] text-[#0d6832]" : "text-[#56665d] hover:bg-[#f6f9f7]"}`}
+                  >
+                    <span>🇻🇳</span>
+                    <span>Tiếng Việt</span>
+                    {locale === "vi" && (
+                      <span className="ml-auto size-1.5 rounded-full bg-[#119444]" />
+                    )}
                   </Link>
-                  <Link onClick={() => setLanguageOpen(false)} href={`/en${localPath}`} className={`mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold ${locale === "en" ? "bg-[#edf8f1] text-[#0d6832]" : "text-[#56665d] hover:bg-[#f6f9f7]"}`}>
-                    <span>🇬🇧</span><span>English</span>{locale === "en" && <span className="ml-auto size-1.5 rounded-full bg-[#119444]" />}
+                  <Link
+                    onClick={() => setLanguageOpen(false)}
+                    href={`/en${localPath}`}
+                    className={`mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold ${locale === "en" ? "bg-[#edf8f1] text-[#0d6832]" : "text-[#56665d] hover:bg-[#f6f9f7]"}`}
+                  >
+                    <span>🇬🇧</span>
+                    <span>English</span>
+                    {locale === "en" && (
+                      <span className="ml-auto size-1.5 rounded-full bg-[#119444]" />
+                    )}
                   </Link>
                 </div>
               )}
@@ -115,45 +158,93 @@ export function Header({ locale }: { locale: Locale }) {
             </Link>
           </div>
 
-          <button aria-label="Open menu" onClick={() => setOpen(true)} className="grid size-10 place-items-center rounded-full border border-[#dfe8e2] bg-white text-[#1f3e2b] lg:hidden">
+          <button
+            aria-label="Open menu"
+            onClick={() => setOpen(true)}
+            className="grid size-10 place-items-center rounded-full border border-[#dfe8e2] bg-white text-[#1f3e2b] lg:hidden"
+          >
             <Menu className="size-5" />
           </button>
         </div>
       </header>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-[#0d1a13]/40 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)}>
-          <aside className="ml-auto flex h-full w-[92%] max-w-sm flex-col bg-white p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 bg-[#0d1a13]/40 backdrop-blur-sm lg:hidden"
+          onClick={() => setOpen(false)}
+        >
+          <aside
+            className="ml-auto flex h-full w-[92%] max-w-sm flex-col bg-white p-5 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="grid size-10 place-items-center rounded-xl bg-[#0f813b] text-xs font-black text-white">KAQ</div>
-                <span className="font-display text-lg font-black tracking-[-.03em] text-[#143b23]">Khang Anh Quân</span>
+                <div className="grid size-10 place-items-center rounded-xl bg-[#0f813b] text-xs font-black text-white">
+                  KAQ
+                </div>
+                <span className="font-display text-lg font-black tracking-[-.03em] text-[#143b23]">
+                  Khang Anh Quân
+                </span>
               </div>
-              <button onClick={() => setOpen(false)} aria-label="Close" className="grid size-10 place-items-center rounded-full bg-[#f5f9f6]"><X className="size-5" /></button>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                className="grid size-10 place-items-center rounded-full bg-[#f5f9f6]"
+              >
+                <X className="size-5" />
+              </button>
             </div>
 
             <form action={`/${locale}/products`} className="relative mt-7">
               <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#718078]" />
-              <Input name="search" placeholder={t.search.placeholder} className="h-11 rounded-xl pl-10" />
+              <Input
+                name="search"
+                placeholder={t.search.placeholder}
+                className="h-11 rounded-xl pl-10"
+              />
             </form>
 
             <nav className="mt-6 space-y-1">
               {nav.map(([href, label]) => (
-                <Link key={href} onClick={() => setOpen(false)} href={`/${locale}${href === "/" ? "" : href}`} className="block rounded-xl px-3 py-3.5 text-[15px] font-bold text-[#274632] hover:bg-[#edf8f1]">
+                <Link
+                  key={href}
+                  onClick={() => setOpen(false)}
+                  href={`/${locale}${href === "/" ? "" : href}`}
+                  className="block rounded-xl px-3 py-3.5 text-[15px] font-bold text-[#274632] hover:bg-[#edf8f1]"
+                >
                   {label}
                 </Link>
               ))}
             </nav>
 
-            <Link onClick={() => setOpen(false)} href={`/${locale}/contact#contact-form`} className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0f813b] px-5 text-sm font-extrabold text-white">
-              {t.actions.contact}<ArrowUpRight className="size-4" />
+            <Link
+              onClick={() => setOpen(false)}
+              href={`/${locale}/contact#contact-form`}
+              className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0f813b] px-5 text-sm font-extrabold text-white"
+            >
+              {t.actions.contact}
+              <ArrowUpRight className="size-4" />
             </Link>
 
             <div className="mt-7">
-              <div className="mb-2 text-[11px] font-extrabold uppercase tracking-[.14em] text-[#7a8981]">Language</div>
+              <div className="mb-2 text-[11px] font-extrabold uppercase tracking-[.14em] text-[#7a8981]">
+                Language
+              </div>
               <div className="grid grid-cols-2 gap-2">
-                <Link onClick={() => setOpen(false)} href={`/vi${localPath}`} className={`rounded-xl border px-3 py-3 text-sm font-bold ${locale === "vi" ? "border-[#bed7c5] bg-[#edf8f1] text-[#0d6832]" : "border-[#dfe8e2] text-[#234632]"}`}>🇻🇳 Tiếng Việt</Link>
-                <Link onClick={() => setOpen(false)} href={`/en${localPath}`} className={`rounded-xl border px-3 py-3 text-sm font-bold ${locale === "en" ? "border-[#bed7c5] bg-[#edf8f1] text-[#0d6832]" : "border-[#dfe8e2] text-[#234632]"}`}>🇬🇧 English</Link>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href={`/vi${localPath}`}
+                  className={`rounded-xl border px-3 py-3 text-sm font-bold ${locale === "vi" ? "border-[#bed7c5] bg-[#edf8f1] text-[#0d6832]" : "border-[#dfe8e2] text-[#234632]"}`}
+                >
+                  🇻🇳 Tiếng Việt
+                </Link>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href={`/en${localPath}`}
+                  className={`rounded-xl border px-3 py-3 text-sm font-bold ${locale === "en" ? "border-[#bed7c5] bg-[#edf8f1] text-[#0d6832]" : "border-[#dfe8e2] text-[#234632]"}`}
+                >
+                  🇬🇧 English
+                </Link>
               </div>
             </div>
           </aside>

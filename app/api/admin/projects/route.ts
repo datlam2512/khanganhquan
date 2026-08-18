@@ -6,11 +6,37 @@ export async function POST(req:Request){const s=await requireAdmin();if(!s)retur
 export async function PUT(req:Request){const s=await requireAdmin();if(!s)return NextResponse.json({error:"Supabase is not configured."},{status:503});const body=Schema.extend({id:z.string().uuid()}).parse(await req.json());const {id,...values}=body;const {data,error}=await s.from("projects").update(values).eq("id",id).select().single();if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({data});}
 export async function DELETE(req:Request){const s=await requireAdmin();if(!s)return NextResponse.json({error:"Supabase is not configured."},{status:503});const {id}=z.object({id:z.string().uuid()}).parse(await req.json());const {error}=await s.from("projects").delete().eq("id",id);if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({ok:true});}
 
+type ProjectImageRow = {
+  id: string;
+  image_path: string;
+  sort_order: number | null;
+};
+
+type ProjectRow = Record<string, unknown> & {
+  project_images?: ProjectImageRow[] | null;
+};
+
 export async function GET() {
   const s = await requireAdmin();
   if (!s) return NextResponse.json({ data: [] });
-  const { data, error } = await s.from("projects").select("*,project_images(id,image_path,sort_order)").order("sort_order", { ascending: true });
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  const mapped = (data ?? []).map((project: any) => ({ ...project, gallery: (project.project_images ?? []).sort((a: any, b: any) => a.sort_order - b.sort_order) }));
+
+  const { data, error } = await s
+    .from("projects")
+    .select("*,project_images(id,image_path,sort_order)")
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  const rows = (data ?? []) as unknown as ProjectRow[];
+
+  const mapped = rows.map((project) => ({
+    ...project,
+    gallery: [...(project.project_images ?? [])].sort(
+      (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0),
+    ),
+  }));
+
   return NextResponse.json({ data: mapped });
 }

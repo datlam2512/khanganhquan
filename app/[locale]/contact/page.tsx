@@ -2,6 +2,7 @@ import { Mail, MapPin, Phone, Globe2 } from "lucide-react";
 import { getLocale, getDictionary } from "@/lib/i18n";
 import { getCompany } from "@/lib/data";
 import { SectionHeading } from "@/components/public/section-heading";
+import { Button } from "@/components/ui/button";
 
 export default async function Contact({ params }: { params: Promise<{ locale: string }> }) {
   const locale = getLocale((await params).locale);
@@ -25,15 +26,15 @@ export default async function Contact({ params }: { params: Promise<{ locale: st
 
             <div className="mt-8 space-y-3">
               <a href={`tel:${company.phone.replace(/\s/g, "")}`} className="flex items-start gap-3 rounded-2xl border border-[#e4ece7] p-4 transition hover:border-[#b9d7c3] hover:bg-[#f8fcf9]">
-                <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-kaq-600"><Phone className="size-4" /></div>
+                <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-[#11823b]"><Phone className="size-4" /></div>
                 <div><div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#87938c]">Phone</div><div className="mt-1 text-sm font-extrabold text-[#193b27]">{company.phone}</div></div>
               </a>
               <a href={`mailto:${company.email}`} className="flex items-start gap-3 rounded-2xl border border-[#e4ece7] p-4 transition hover:border-[#b9d7c3] hover:bg-[#f8fcf9]">
-                <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-kaq-600"><Mail className="size-4" /></div>
+                <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-[#11823b]"><Mail className="size-4" /></div>
                 <div><div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#87938c]">Email</div><div className="mt-1 text-sm font-extrabold text-[#193b27]">{company.email}</div></div>
               </a>
               <a href={`https://${company.website.replace(/^https?:\/\//, "")}`} target="_blank" rel="noreferrer" className="flex items-start gap-3 rounded-2xl border border-[#e4ece7] p-4 transition hover:border-[#b9d7c3] hover:bg-[#f8fcf9]">
-                <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-kaq-600"><Globe2 className="size-4" /></div>
+                <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-[#11823b]"><Globe2 className="size-4" /></div>
                 <div><div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#87938c]">Website</div><div className="mt-1 text-sm font-extrabold text-[#193b27]">{company.website}</div></div>
               </a>
             </div>
@@ -41,7 +42,7 @@ export default async function Contact({ params }: { params: Promise<{ locale: st
 
           <div className="rounded-[28px] border border-[#e1eae4] bg-white p-7 shadow-[0_20px_55px_rgba(20,35,27,.06)] md:p-9">
             <div className="flex items-start gap-3">
-              <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-kaq-600"><MapPin className="size-4" /></div>
+              <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-[#11823b]"><MapPin className="size-4" /></div>
               <div>
                 <div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#87938c]">{locale === "vi" ? "Trụ sở chính" : "Head office"}</div>
                 <h2 className="mt-1 text-xl font-extrabold text-[#173826]">39/1 Nguyễn Cửu Đàm</h2>
@@ -51,7 +52,7 @@ export default async function Contact({ params }: { params: Promise<{ locale: st
             <div className="mt-7 overflow-hidden rounded-2xl border border-[#e4ece7] bg-[#f4f8f5] shadow-sm">
               <iframe title={locale === "vi" ? "Bản đồ trụ sở chính" : "Head office map"} src="https://www.google.com/maps?q=39%2F1%20Nguyen%20Cuu%20Dam%2C%20Tan%20Son%20Nhi%2C%20Tan%20Phu%2C%20Ho%20Chi%20Minh%2C%20Vietnam&output=embed" className="h-80 w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
             </div>
-            <a href="https://www.google.com/maps/search/?api=1&query=39%2F1%20Nguyen%20Cuu%20Dam%20Tan%20Phu%20Ho%20Chi%20Minh" target="_blank" rel="noreferrer" className="group inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold tracking-[-0.01em] transition-all duration-200 active:translate-y-px bg-[#0B9F4A] text-white shadow-[0_10px_25px_rgba(11,159,74,.22)] hover:-translate-y-0.5 hover:bg-[#087A3A] hover:shadow-[0_14px_30px_rgba(11,159,74,.28)] mt-5">{t.actions.direction}</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=39%2F1%20Nguyen%20Cuu%20Dam%20Tan%20Phu%20Chi%20Minh" target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center justify-center rounded-xl bg-[#11823b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0d6832]">{t.actions.direction}</a>
           </div>
         </div>
       </section>
