@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/manrope";
+
+@theme {
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope Variable", "Manrope", "Inter Variable", sans-serif;
+  --color-kaq-50: #f4fbf7;
+  --color-kaq-100: #e5f5ea;
+  --color-kaq-200: #ccebd5;
+  --color-kaq-300: #9dd8ac;
+  --color-kaq-400: #5fc27c;
+  --color-kaq-500: #18a34a;
+  --color-kaq-600: #11823b;
+  --color-kaq-700: #0d6832;
+  --color-kaq-800: #0a542a;
+  --color-kaq-900: #083f21;
+  --color-ink: #14231b;
+  --color-muted: #66746c;
+  --color-line: #e3ebe6;
+  --color-surface: #f6f9f7;
+}
+
+:root {
+  --brand: #11823b;
+  --brand-strong: #0a542a;
+  --brand-soft: #edf8f1;
+  --ink: #14231b;
+  --muted: #66746c;
+  --line: #e3ebe6;
+  --surface: #f6f9f7;
+  --container: 1240px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: #fff;
+  font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { text-decoration: none; color: inherit; }
+button, input, textarea, select { font: inherit; }
+::selection { background: #cfead7; color: #07391d; }
+
+.container-kaq {
+  width: min(var(--container), calc(100% - 40px));
+  margin-inline: auto;
+}
+.section-pad { padding-block: 96px; }
+.eyebrow {
+  color: var(--brand);
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.heading-display {
+  font-family: "Manrope Variable", "Manrope", "Inter Variable", sans-serif;
+  letter-spacing: -.045em;
+}
+.surface-card {
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(20,35,27,.055);
+}
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(12,84,42,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(12,84,42,.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.hero-overlay {
+  background:
+    linear-gradient(90deg, rgba(6,27,17,.90) 0%, rgba(6,27,17,.68) 45%, rgba(6,27,17,.22) 78%, rgba(6,27,17,.06) 100%),
+    linear-gradient(180deg, rgba(6,27,17,.12), rgba(6,27,17,.28));
+}
+@media (max-width: 768px) {
+  .container-kaq { width: min(100% - 24px, var(--container)); }
+  .section-pad { padding-block: 72px; }
+}
+
+
+/* Smooth public-page scrolling and subtle reveal motion */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 92px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-up {
+    animation: kaq-reveal-up .75s cubic-bezier(.22,.8,.2,1) both;
+  }
+
+  .reveal-fade {
+    animation: kaq-reveal-fade .9s cubic-bezier(.22,.8,.2,1) both;
+  }
+
+  .reveal-delay-1 { animation-delay: .08s; }
+  .reveal-delay-2 { animation-delay: .16s; }
+  .reveal-delay-3 { animation-delay: .24s; }
+}
+
+@keyframes kaq-reveal-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kaq-reveal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
