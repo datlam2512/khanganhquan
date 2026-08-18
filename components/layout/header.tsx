@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Locale } from "@/lib/types";
 import { getDictionary } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
+import { VN, GB } from "country-flag-icons/react/3x2";
 import NextImage from "next/image";
 export function Header({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
@@ -112,12 +113,18 @@ export function Header({ locale }: { locale: Locale }) {
                 onClick={() => setLanguageOpen((v) => !v)}
                 className="inline-flex h-10 items-center gap-2 rounded-full border border-[#dfe8e2] bg-white px-3.5 text-[11px] font-extrabold text-[#294a37] transition hover:border-[#bed7c5] hover:bg-[#f4faf6]"
               >
-                <span className="text-base">
-                  {locale === "vi" ? "🇻🇳" : "🇬🇧"}
+                <span className="flex h-5 w-7 overflow-hidden rounded-sm">
+                  {locale === "vi" ? (
+                    <VN title="Vietnam" className="h-full w-full" />
+                  ) : (
+                    <GB title="United Kingdom" className="h-full w-full" />
+                  )}
                 </span>
-                <span>{locale === "vi" ? "Tiếng Việt" : "English"}</span>
+
                 <ChevronDown
-                  className={`size-3.5 transition-transform ${languageOpen ? "rotate-180" : ""}`}
+                  className={`size-3.5 transition-transform ${
+                    languageOpen ? "rotate-180" : ""
+                  }`}
                 />
               </button>
 
@@ -151,7 +158,7 @@ export function Header({ locale }: { locale: Locale }) {
 
             <Link
               href={`/${locale}/contact#contact-form`}
-              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#0f813b] px-4 text-[11px] font-extrabold text-white shadow-[0_8px_20px_rgba(15,129,59,.18)] transition hover:bg-[#0a6c32]"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#0f813b] px-4 text-[11px] font-extrabold !text-[#EEEEEE] shadow-[0_8px_20px_rgba(15,129,59,.18)] transition hover:bg-[#0a6c32]"
             >
               {t.actions.contact}
               <ArrowUpRight className="size-3.5" />

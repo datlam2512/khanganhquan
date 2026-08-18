@@ -44,7 +44,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ loca
               <p className="mt-3 text-sm leading-7 text-[#65736b]">{project.scope}</p>
             </div>
           </div>
-          <div className="mt-8">
+          <div className="mt-8 !text-[#EEEEEE]">
             <Button href={`/${locale}/contact#contact-form`}>{t.actions.contact}</Button>
           </div>
         </div>
