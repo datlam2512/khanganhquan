@@ -15,9 +15,9 @@ export type HeroSlide = {
 };
 
 const fallbackSlides: HeroSlide[] = [
-  { id: "demo-1", image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=2200&q=86", sortOrder: 1, published: true },
-  { id: "demo-2", image: "https://images.unsplash.com/photo-1565610222536-ef125c59da2e?auto=format&fit=crop&w=2200&q=86", sortOrder: 2, published: true },
-  { id: "demo-3", image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=2200&q=86", sortOrder: 3, published: true },
+  { id: "demo-1", image: "/banner/BannerKAQ1.jpg", sortOrder: 1, published: true },
+  { id: "demo-2", image: "/banner/BannerKAQ2.jpg", sortOrder: 2, published: true },
+  { id: "demo-3", image: "/banner/BannerKAQ3.jpg", sortOrder: 3, published: true },
 ];
 
 export function Hero({ locale, slides = fallbackSlides }: { locale: Locale; slides?: HeroSlide[] }) {
