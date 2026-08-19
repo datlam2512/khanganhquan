@@ -19,8 +19,8 @@ export default async function Projects({
             title={t.nav.projects}
             description={
               locale === "vi"
-                ? "Một số dự án tiêu biểu được trình bày ở mức showcase; dữ liệu chi tiết có thể quản trị từ CMS."
-                : "A project showcase where detailed information can be managed through the CMS."
+                ? "Một số dự án tiêu biểu"
+                : "Some outstanding projects "
             }
           />
         </div>

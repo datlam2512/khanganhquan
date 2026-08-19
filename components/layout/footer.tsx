@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Locale } from "@/lib/types";
 import { getDictionary } from "@/lib/i18n";
 import { company } from "@/data/site";
-
+import NextImage from "next/image";
 export function Footer({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   return (
@@ -12,7 +12,15 @@ export function Footer({ locale }: { locale: Locale }) {
         <div className="grid gap-12 lg:grid-cols-[1.4fr_.7fr_.9fr]">
           <div>
             <div className="flex items-center gap-3">
-              <div className="grid size-11 place-items-center rounded-xl bg-[#138c42] text-sm font-black">KAQ</div>
+                 <div className="relative size-15 shrink-0">
+                           <NextImage
+                             src="/logo/logo-green.png"
+                             alt="Khang Anh Quân"
+                             fill
+                             priority
+                             className="object-contain"
+                           />
+                         </div>
               <div>
                 <div className="font-display text-lg font-extrabold tracking-[-.02em]">{locale === "vi" ? company.name : company.nameEn}</div>
                 <div className="mt-1 text-[9px] font-bold tracking-[.18em] text-white/40">INDUSTRIAL EQUIPMENT</div>
@@ -45,10 +53,11 @@ export function Footer({ locale }: { locale: Locale }) {
           <div>
             <div className="text-[11px] font-extrabold uppercase tracking-[.16em] text-white/35">{t.nav.contact}</div>
             <div className="mt-4 space-y-3 text-sm leading-6 text-white/62">
-              <div>{company.phone}</div>
+              <div>091373137 (Mr Lan)</div>
+              <div>090959660 (Mr Thái)</div>
+              <div>0963191589 (Mr Tín)</div>
               <div className="break-all">{company.email}</div>
               <div>{company.headquarters}</div>
-              <div>{company.branch}</div>
             </div>
           </div>
         </div>

@@ -252,10 +252,6 @@ export default async function Home({ params }: HomeProps) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#071e12]/80 via-transparent to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                      <div className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#b7e8c7]">
-                        {featuredProjects[0].location} ·{" "}
-                        {featuredProjects[0].year}
-                      </div>
                       <div className="mt-2 font-display text-2xl font-extrabold tracking-[-.03em] md:text-3xl">
                         {locale === "vi"
                           ? featuredProjects[0].title
@@ -282,9 +278,6 @@ export default async function Home({ params }: HomeProps) {
                       />
                     </div>
                     <div className="flex flex-col justify-center p-5">
-                      <div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#11823b]">
-                        {project.location} · {project.year}
-                      </div>
                       <div className="mt-2 text-lg font-extrabold leading-tight text-[#173a27]">
                         {locale === "vi" ? project.title : project.titleEn}
                       </div>

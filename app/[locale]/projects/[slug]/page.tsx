@@ -109,6 +109,7 @@ export default async function ProjectDetail({
                     >
                       <div className="relative aspect-[16/10] overflow-hidden bg-[#edf3ef]">
                         {item.coverImage && (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={item.coverImage}
                             alt={itemTitle}
@@ -148,7 +149,7 @@ export default async function ProjectDetail({
 
           {/* Contact */}
           <div className="mt-14">
-            <Button href={`/${locale}/contact#contact-form`}>
+            <Button href={`/${locale}/contact#contact-form`} className="!text-white">
               {t.actions.contact}
             </Button>
           </div>

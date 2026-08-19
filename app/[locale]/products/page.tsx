@@ -3,6 +3,7 @@ import { getCategories, getProducts } from "@/lib/data";
 import { ProductCard } from "@/components/public/product-card";
 import { Input } from "@/components/ui/input";
 import { SectionHeading } from "@/components/public/section-heading";
+import { ProductFilters } from "@/components/public/product-filter";
 
 export default async function Products({
   params,
@@ -34,30 +35,11 @@ export default async function Products({
                 : "Search by name, product code, category, material, standards or description."
             }
           />
-          <form
-            className="mt-7 grid gap-3 md:grid-cols-[1fr_260px]"
-            method="GET"
-          >
-            <Input
-              name="search"
-              defaultValue={q}
-              placeholder={t.search.placeholder}
-            />
-            <select
-              name="category"
-              defaultValue={category}
-              className="h-11 rounded-lg border border-[#DCE5DF] bg-white px-3 text-sm"
-            >
-              <option value="">
-                {locale === "vi" ? "Tất cả danh mục" : "All categories"}
-              </option>
-              {categories.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {locale === "vi" ? c.name : c.nameEn}
-                </option>
-              ))}
-            </select>
-          </form>
+          <ProductFilters
+            categories={categories}
+            initialSearch={q}
+            initialCategory={category}
+          />
           <div className="mt-4 text-sm text-[#64726A]">
             {list.length} {t.search.results}
             {q ? ` · “${q}”` : ""}
