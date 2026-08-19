@@ -1,26 +1,27 @@
 export type Locale = "vi" | "en";
 
-export type Product = {
+export type ProductImage = {
   id: string;
-  slug: string;
-  code: string;
-  categorySlug: string;
-  name: string;
-  nameEn: string;
-  short: string;
-  shortEn: string;
-  description: string;
-  descriptionEn: string;
-  material: string;
-  materialEn: string;
-  standards: string;
-  applications: string;
-  applicationsEn: string;
-  image: string;
-  gallery: string[];
-  published: boolean;
+  productId: string;
+  imageUrl: string;
+  altVi: string | null;
+  altEn: string | null;
+  sortOrder: number;
+  isPrimary: boolean;
 };
 
+export type SpecGroup = {
+  id?: string;
+  title?: string;
+  type?: "table" | "text" | "material";
+  content?: string;
+  columns?: string[];
+  rows?: (string | string[])[];
+  groups?: {
+    name?: string;
+    items?: (string | string[])[];
+  }[];
+};
 export type Category = {
   id: string;
   slug: string;
@@ -29,6 +30,36 @@ export type Category = {
   description: string;
   descriptionEn: string;
   image: string;
+  published: boolean;
+};
+export type Product = {
+  id: string;
+  slug: string;
+  code: string;
+
+  // CŨ:
+  // categorySlug: string;
+
+  // MỚI:
+  categoryId: string;
+
+  name: string;
+  nameEn: string;
+
+  short: string;
+  shortEn: string;
+
+  description: string;
+  descriptionEn: string;
+
+  material: string;
+  materialEn: string;
+
+  specGroupsVi: SpecGroup[];
+  specGroupsEn: SpecGroup[];
+
+  images: ProductImage[];
+
   published: boolean;
 };
 

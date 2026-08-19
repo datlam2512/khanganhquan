@@ -18,21 +18,21 @@ const fallbackSlides: HeroSlide[] = [
   {
     id: "demo-1",
     image:
-      "https://diwyyuznprotgonctyry.supabase.co/storage/v1/object/public/image-project/banner/BannerKAQ1.jpg",
+      "https://diwyyuznprotgonctyry.supabase.co/storage/v1/object/public/image-project/banner/banner1.jpeg",
     sortOrder: 1,
     published: true,
   },
   {
     id: "demo-2",
     image:
-      "https://diwyyuznprotgonctyry.supabase.co/storage/v1/object/public/image-project/banner/BannerKAQ2.jpg",
+      "https://diwyyuznprotgonctyry.supabase.co/storage/v1/object/public/image-project/banner/banner2.jpeg",
     sortOrder: 2,
     published: true,
   },
   {
     id: "demo-3",
     image:
-      "https://diwyyuznprotgonctyry.supabase.co/storage/v1/object/public/image-project/banner/BannerKAQ3.jpg",
+      "https://diwyyuznprotgonctyry.supabase.co/storage/v1/object/public/image-project/banner/banner3.jpeg",
     sortOrder: 3,
     published: true,
   },

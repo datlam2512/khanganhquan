@@ -93,174 +93,485 @@ export const products: Product[] = [
     id: "p1",
     slug: "carbon-steel-pipe",
     code: "CS-P-001",
-    categorySlug: "ong-thep-phu-kien",
+    categoryId: "c1",
+
     name: "Ống thép carbon",
     nameEn: "Carbon Steel Pipe",
+
     short: "Ống thép carbon dùng cho hệ thống đường ống công nghiệp.",
     shortEn: "Carbon steel pipe for industrial piping systems.",
+
     description:
       "Dòng ống thép carbon dành cho các hệ thống đường ống. Thông tin kỹ thuật chi tiết được quản trị từ CMS.",
     descriptionEn:
       "Carbon steel pipe for industrial piping systems. Detailed technical information is managed through the CMS.",
+
     material: "Carbon Steel",
     materialEn: "Carbon Steel",
-    standards: "ASME B36.10 / API 5L / DIN / JIS (tùy sản phẩm)",
-    applications: "Đường ống công nghiệp, dầu khí, LPG",
-    applicationsEn: "Industrial piping, oil & gas, LPG",
-    image: industrial("photo-1518770660439-4636190af475"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "ASME B36.10 / API 5L / DIN / JIS",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "Đường ống công nghiệp, dầu khí, LPG",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "ASME B36.10 / API 5L / DIN / JIS",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "Industrial piping, oil & gas, LPG",
+      },
+    ],
+
+    images: [
+      {
+        id: "p1-img-1",
+        productId: "p1",
+        imageUrl: industrial("photo-1518770660439-4636190af475"),
+        altVi: "Ống thép carbon",
+        altEn: "Carbon Steel Pipe",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
+
   {
     id: "p2",
     slug: "stainless-steel-pipe",
     code: "SS-P-002",
-    categorySlug: "ong-thep-phu-kien",
+    categoryId: "c1",
+
     name: "Ống thép không gỉ",
     nameEn: "Stainless Steel Pipe",
+
     short: "Ống inox cho hệ thống yêu cầu khả năng chống ăn mòn.",
     shortEn: "Stainless steel pipe for corrosion-sensitive systems.",
+
     description:
       "Ống thép không gỉ cho nhiều hệ thống kỹ thuật và công nghiệp.",
     descriptionEn:
       "Stainless steel pipe for a wide range of technical and industrial systems.",
+
     material: "Stainless Steel",
     materialEn: "Stainless Steel",
-    standards: "Theo cấu hình và tiêu chuẩn đặt hàng",
-    applications: "Đường ống công nghiệp và hệ thống kỹ thuật",
-    applicationsEn: "Industrial piping and technical systems",
-    image: industrial("photo-1504917595217-d4dc5ebe6122"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "Theo cấu hình và tiêu chuẩn đặt hàng",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "Đường ống công nghiệp và hệ thống kỹ thuật",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "According to configuration and ordering standard",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "Industrial piping and technical systems",
+      },
+    ],
+
+    images: [
+      {
+        id: "p2-img-1",
+        productId: "p2",
+        imageUrl: industrial("photo-1504917595217-d4dc5ebe6122"),
+        altVi: "Ống thép không gỉ",
+        altEn: "Stainless Steel Pipe",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
+
   {
     id: "p3",
     slug: "gate-valve",
     code: "VAL-G-001",
-    categorySlug: "van-cong-nghiep",
+    categoryId: "c2",
+
     name: "Van cổng",
     nameEn: "Gate Valve",
+
     short: "Van đóng mở cho đường ống công nghiệp.",
     shortEn: "On/off valve for industrial piping.",
+
     description:
       "Van cổng sử dụng trong các hệ thống đường ống với nhiều cấu hình khác nhau.",
     descriptionEn:
       "Gate valve available in different configurations for industrial piping systems.",
+
     material: "Carbon Steel / Stainless Steel",
     materialEn: "Carbon Steel / Stainless Steel",
-    standards: "Theo cấu hình sản phẩm",
-    applications: "Dầu khí, nước, khí và hệ thống công nghiệp",
-    applicationsEn: "Oil & gas, water, gas and industrial systems",
-    image: industrial("photo-1581092160607-ee22621dd758"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "Theo cấu hình sản phẩm",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "Dầu khí, nước, khí và hệ thống công nghiệp",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "According to product configuration",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "Oil & gas, water, gas and industrial systems",
+      },
+    ],
+
+    images: [
+      {
+        id: "p3-img-1",
+        productId: "p3",
+        imageUrl: industrial("photo-1581092160607-ee22621dd758"),
+        altVi: "Van cổng",
+        altEn: "Gate Valve",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
+
   {
     id: "p4",
     slug: "ball-valve",
     code: "VAL-B-002",
-    categorySlug: "van-cong-nghiep",
+    categoryId: "c2",
+
     name: "Van bi",
     nameEn: "Ball Valve",
+
     short: "Van bi cho đóng mở nhanh và tin cậy.",
     shortEn: "Ball valve for reliable and fast shutoff.",
+
     description: "Van bi cho các hệ thống cần giải pháp đóng mở nhanh.",
     descriptionEn: "Ball valve for systems requiring quick shutoff.",
+
     material: "Carbon Steel / Stainless Steel",
     materialEn: "Carbon Steel / Stainless Steel",
-    standards: "Theo cấu hình sản phẩm",
-    applications: "LPG, gas, process piping",
-    applicationsEn: "LPG, gas, process piping",
-    image: industrial("photo-1581092795360-fd1ca04f0952"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "Theo cấu hình sản phẩm",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "LPG, gas, process piping",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "According to product configuration",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "LPG, gas, process piping",
+      },
+    ],
+
+    images: [
+      {
+        id: "p4-img-1",
+        productId: "p4",
+        imageUrl: industrial("photo-1581092795360-fd1ca04f0952"),
+        altVi: "Van bi",
+        altEn: "Ball Valve",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
+
   {
     id: "p5",
     slug: "api-safety-valve",
     code: "SAF-001",
-    categorySlug: "thiet-bi-bon-xang-dau",
+    categoryId: "c3",
+
     name: "Van an toàn API",
     nameEn: "API Safety Valve",
+
     short: "Thiết bị bảo vệ áp suất cho hệ thống công nghiệp.",
     shortEn: "Pressure protection device for industrial systems.",
+
     description:
       "Van an toàn dành cho hệ thống cần bảo vệ quá áp theo cấu hình phù hợp.",
     descriptionEn:
       "Safety valve for pressure protection in suitable industrial applications.",
+
     material: "Theo cấu hình",
     materialEn: "Per configuration",
-    standards: "API / tiêu chuẩn theo model",
-    applications: "Bồn chứa và hệ thống áp lực",
-    applicationsEn: "Storage tanks and pressure systems",
-    image: industrial("photo-1581091870622-3e6a4d07c12f"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "API / tiêu chuẩn theo model",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "Bồn chứa và hệ thống áp lực",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "API / standard according to model",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "Storage tanks and pressure systems",
+      },
+    ],
+
+    images: [
+      {
+        id: "p5-img-1",
+        productId: "p5",
+        imageUrl: industrial("photo-1581091870622-3e6a4d07c12f"),
+        altVi: "Van an toàn API",
+        altEn: "API Safety Valve",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
+
   {
     id: "p6",
     slug: "gas-meter",
     code: "MTR-001",
-    categorySlug: "thiet-bi-do",
+    categoryId: "c4",
+
     name: "Đồng hồ đo khí",
     nameEn: "Gas Meter",
+
     short: "Thiết bị đo lưu lượng/khối lượng khí tùy cấu hình.",
     shortEn: "Gas measurement device depending on configuration.",
+
     description:
       "Thiết bị đo khí cho các ứng dụng phù hợp trong hệ thống kỹ thuật.",
     descriptionEn:
       "Gas measurement equipment for suitable technical applications.",
+
     material: "Theo model",
     materialEn: "Per model",
-    standards: "Theo model",
-    applications: "Khí gas và hệ thống LPG",
-    applicationsEn: "Gas and LPG systems",
-    image: industrial("photo-1581091226825-a6a2a5aee158"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "Theo model",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "Khí gas và hệ thống LPG",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "According to model",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "Gas and LPG systems",
+      },
+    ],
+
+    images: [
+      {
+        id: "p6-img-1",
+        productId: "p6",
+        imageUrl: industrial("photo-1581091226825-a6a2a5aee158"),
+        altVi: "Đồng hồ đo khí",
+        altEn: "Gas Meter",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
+
   {
     id: "p7",
     slug: "gas-detector",
     code: "FIR-001",
-    categorySlug: "thiet-bi-pccc",
+    categoryId: "c5",
+
     name: "Thiết bị báo rò khí",
     nameEn: "Gas Detector",
+
     short: "Thiết bị cảnh báo khí cho hệ thống an toàn.",
     shortEn: "Gas detection device for safety systems.",
+
     description:
       "Thiết bị phát hiện khí trong các môi trường và hệ thống phù hợp.",
     descriptionEn:
       "Gas detection equipment for suitable environments and safety systems.",
+
     material: "Theo model",
     materialEn: "Per model",
-    standards: "Theo model",
-    applications: "PCCC, LPG, khu vực kỹ thuật",
-    applicationsEn: "Fire protection, LPG and technical areas",
-    image: industrial("photo-1581091012184-5c5f2c1f2b0b"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "Theo model",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "PCCC, LPG, khu vực kỹ thuật",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "According to model",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "Fire protection, LPG and technical areas",
+      },
+    ],
+
+    images: [
+      {
+        id: "p7-img-1",
+        productId: "p7",
+        imageUrl: industrial("photo-1581091012184-5c5f2c1f2b0b"),
+        altVi: "Thiết bị báo rò khí",
+        altEn: "Gas Detector",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
+
   {
     id: "p8",
     slug: "lpg-hose",
     code: "LPG-001",
-    categorySlug: "lpg",
+    categoryId: "c7",
+
     name: "Ống mềm LPG",
     nameEn: "LPG Hose",
+
     short: "Ống mềm chuyên dụng cho hệ thống LPG.",
     shortEn: "Flexible hose for LPG systems.",
+
     description:
       "Ống mềm phục vụ các kết nối trong hệ thống LPG theo cấu hình yêu cầu.",
     descriptionEn:
       "Flexible hose for connections in LPG systems based on required configuration.",
+
     material: "Theo model",
     materialEn: "Per model",
-    standards: "Theo model",
-    applications: "Hệ thống LPG",
-    applicationsEn: "LPG systems",
-    image: industrial("photo-1532601224476-15c79f2f7a51"),
-    gallery: [],
+
+    specGroupsVi: [
+      {
+        title: "Tiêu chuẩn",
+        type: "text",
+        content: "Theo model",
+      },
+      {
+        title: "Ứng dụng",
+        type: "text",
+        content: "Hệ thống LPG",
+      },
+    ],
+
+    specGroupsEn: [
+      {
+        title: "Standards",
+        type: "text",
+        content: "According to model",
+      },
+      {
+        title: "Applications",
+        type: "text",
+        content: "LPG systems",
+      },
+    ],
+
+    images: [
+      {
+        id: "p8-img-1",
+        productId: "p8",
+        imageUrl: industrial("photo-1532601224476-15c79f2f7a51"),
+        altVi: "Ống mềm LPG",
+        altEn: "LPG Hose",
+        sortOrder: 0,
+        isPrimary: true,
+      },
+    ],
+
     published: true,
   },
 ];

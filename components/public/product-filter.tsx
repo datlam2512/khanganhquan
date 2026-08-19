@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
@@ -28,9 +28,27 @@ export function ProductFilters({
   const [search, setSearch] = useState(initialSearch);
   const [category, setCategory] = useState(initialCategory);
 
+  // Giữ reference ổn định tới searchParams hiện tại mà KHÔNG
+  // đưa vào dependency array của effect debounce bên dưới, để
+  // tránh effect tự kích hoạt lại sau mỗi lần router.replace.
+  // Ghi vào ref phải nằm trong effect, không được ghi trong render.
+  const searchParamsRef = useRef(searchParams);
   useEffect(() => {
+    searchParamsRef.current = searchParams;
+  }, [searchParams]);
+
+  // Bỏ qua lần chạy đầu tiên khi mount, vì state ban đầu
+  // đã khớp với URL rồi, không cần replace ngay.
+  const isFirstRun = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+
     const timeout = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParamsRef.current.toString());
 
       if (search.trim()) {
         params.set("search", search.trim());
@@ -44,21 +62,19 @@ export function ProductFilters({
         params.delete("category");
       }
 
-      const query = params.toString();
+      const nextQuery = params.toString();
+      const currentQuery = searchParamsRef.current.toString();
 
-      router.replace(
-        query ? `${pathname}?${query}` : pathname
-      );
+      // Chỉ điều hướng khi query thực sự thay đổi
+      if (nextQuery === currentQuery) return;
+
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
     }, 400);
 
     return () => clearTimeout(timeout);
-  }, [
-    search,
-    category,
-    pathname,
-    router,
-    searchParams,
-  ]);
+    // Chỉ phụ thuộc vào input của người dùng, không phụ thuộc
+    // vào searchParams/router/pathname (những thứ effect tự thay đổi)
+  }, [search, category]);
 
   return (
     <div className="mt-7 grid gap-3 md:grid-cols-[1fr_260px]">
