@@ -42,6 +42,8 @@ export default function Login() {
         email,
         password,
       });
+      console.log("LOGIN DATA:");
+console.log("LOGIN ERROR:", authError);
       if (authError) {
         setError(authError.message);
         return;
@@ -55,6 +57,7 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+
   }
 
   return (

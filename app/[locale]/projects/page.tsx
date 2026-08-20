@@ -23,8 +23,8 @@ export default async function Projects({
             title={t.nav.projects}
             description={
               locale === "vi"
-                ? "Một số dự án tiêu biểu"
-                : "Some outstanding projects "
+                ? "Dấu ấn qua những công trình và dự án nổi bật."
+                : "A glimpse of our work through distinguished projects."
             }
           />
         </div>
