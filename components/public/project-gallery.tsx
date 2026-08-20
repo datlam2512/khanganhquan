@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function ProjectGallery({
@@ -11,249 +11,177 @@ export function ProjectGallery({
   images: string[];
   title: string;
 }) {
-  const gallery = images.filter(Boolean);
-
+  const gallery = images.filter(Boolean).length ? images.filter(Boolean) : [];
   const [index, setIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  const currentImage = gallery[index];
+  const move = (direction: 1 | -1) => {
+    setIndex((value) => (value + direction + gallery.length) % gallery.length);
+  };
 
-  // =========================================================
-  // LOCK BODY SCROLL WHEN LIGHTBOX IS OPEN
-  // =========================================================
+  // Khóa scroll nền khi mở modal + hỗ trợ phím tắt (ESC đóng, mũi tên chuyển ảnh)
   useEffect(() => {
     if (!isOpen) return;
 
     const originalOverflow = document.body.style.overflow;
-
     document.body.style.overflow = "hidden";
 
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen]);
-
-  // =========================================================
-  // KEYBOARD CONTROLS
-  // =========================================================
-  useEffect(() => {
-    if (!isOpen) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsOpen(false);
-        return;
-      }
-
-      if (e.key === "ArrowRight" && gallery.length > 1) {
-        setIndex((prev) => (prev + 1) % gallery.length);
-      }
-
-      if (e.key === "ArrowLeft" && gallery.length > 1) {
-        setIndex(
-          (prev) => (prev - 1 + gallery.length) % gallery.length
-        );
-      }
+      if (e.key === "Escape") setIsOpen(false);
+      if (e.key === "ArrowLeft") move(-1);
+      if (e.key === "ArrowRight") move(1);
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
+      document.body.style.overflow = originalOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, gallery.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
-  // =========================================================
-  // NO IMAGES
-  // =========================================================
-  if (!gallery.length) {
-    return null;
-  }
-
-  // =========================================================
-  // OPEN
-  // =========================================================
-  const openFullscreen = () => {
-    setIsOpen(true);
-  };
-
-  // =========================================================
-  // CLOSE
-  // =========================================================
-  const closeFullscreen = () => {
-    setIsOpen(false);
-  };
-
-  // =========================================================
-  // NEXT
-  // =========================================================
-  const nextImage = () => {
-    if (gallery.length <= 1) return;
-
-    setIndex((prev) => (prev + 1) % gallery.length);
-  };
-
-  // =========================================================
-  // PREVIOUS
-  // =========================================================
-  const prevImage = () => {
-    if (gallery.length <= 1) return;
-
-    setIndex(
-      (prev) => (prev - 1 + gallery.length) % gallery.length
-    );
-  };
-
-  // =========================================================
-  // SELECT THUMBNAIL
-  // =========================================================
-  const selectImage = (imageIndex: number) => {
-    setIndex(imageIndex);
-  };
+  if (!gallery.length) return null;
+  const current = gallery[index];
 
   return (
-    <>
-      {/* =====================================================
-          MAIN IMAGE
-      ===================================================== */}
-      <div className="mt-10 overflow-hidden rounded-[28px] bg-[#edf3ef]">
-        <button
-          type="button"
-          onClick={openFullscreen}
-          className="group relative block aspect-[16/9] w-full cursor-zoom-in"
-          aria-label={`Xem ảnh ${title} toàn màn hình`}
-        >
-          <Image
-            src={currentImage}
-            alt={title}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 1180px"
-            className="object-cover transition duration-500 group-hover:scale-[1.02]"
-          />
+    <div className="mt-8">
+      <div
+        onClick={() => setIsOpen(true)}
+        className="group relative aspect-[16/8.5] cursor-zoom-in overflow-hidden rounded-[28px] bg-[#e8efea] shadow-[0_20px_55px_rgba(20,35,27,.10)]"
+      >
+        <Image
+          src={current}
+          alt={`${title} - ${index + 1}`}
+          fill
+          priority={index === 0}
+          className="object-cover transition-opacity duration-500"
+          sizes="(max-width:1024px) 100vw, 1100px"
+        />
 
-          {/* Hover overlay */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition duration-300 group-hover:bg-black/20">
-            <span className="translate-y-2 rounded-full bg-black/60 px-5 py-2.5 text-sm font-semibold text-white opacity-0 backdrop-blur-sm transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-              Nhấn để xem ảnh đầy đủ
-            </span>
+        {/* Gợi ý phóng to khi hover */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/15">
+          <div className="grid size-12 place-items-center rounded-full bg-black/40 text-white opacity-0 backdrop-blur-md transition group-hover:opacity-100">
+            <Expand className="size-5" />
           </div>
-        </button>
+        </div>
+
+        {gallery.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                move(-1);
+              }}
+              aria-label="Ảnh trước"
+              className="absolute left-4 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur-md transition hover:bg-black/50"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                move(1);
+              }}
+              aria-label="Ảnh tiếp theo"
+              className="absolute right-4 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur-md transition hover:bg-black/50"
+            >
+              <ChevronRight className="size-5" />
+            </button>
+            <div className="absolute bottom-4 right-4 rounded-full bg-black/45 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md">
+              {index + 1} / {gallery.length}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* =====================================================
-          THUMBNAILS
-      ===================================================== */}
       {gallery.length > 1 && (
-        <div className="mt-4 grid grid-cols-4 gap-3 md:grid-cols-6">
-          {gallery.map((image, imageIndex) => (
+        <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
+          {gallery.map((image, i) => (
             <button
-              key={`${image}-${imageIndex}`}
               type="button"
-              onClick={() => selectImage(imageIndex)}
-              className={`relative aspect-[16/10] overflow-hidden rounded-xl border-2 transition ${
-                index === imageIndex
-                  ? "border-[#11823b]"
-                  : "border-transparent hover:border-[#b8cfc0]"
-              }`}
-              aria-label={`Xem ảnh ${imageIndex + 1}`}
+              key={`${image}-${i}`}
+              onClick={() => setIndex(i)}
+              className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition ${i === index ? "border-[#11823b]" : "border-transparent opacity-70 hover:opacity-100"}`}
+              aria-label={`Xem ảnh ${i + 1}`}
             >
               <Image
                 src={image}
-                alt={`${title} ${imageIndex + 1}`}
+                alt=""
                 fill
-                sizes="(max-width: 768px) 25vw, 16vw"
-                className="object-cover transition duration-300 hover:scale-105"
+                className="object-cover"
+                sizes="112px"
               />
             </button>
           ))}
         </div>
       )}
 
-      {/* =====================================================
-          LIGHTBOX
-      ===================================================== */}
+      {/* Modal xem ảnh full size */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-3 md:p-6"
-          onClick={closeFullscreen}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Xem ảnh ${title}`}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm md:p-8"
+          onClick={() => setIsOpen(false)}
         >
-          {/* =================================================
-              CLOSE
-          ================================================= */}
           <button
             type="button"
-            onClick={closeFullscreen}
-            className="absolute right-3 top-3 z-[10002] rounded-full bg-white/10 p-3 text-white backdrop-blur-md transition hover:bg-white/20 md:right-6 md:top-6"
+            onClick={() => setIsOpen(false)}
             aria-label="Đóng"
+            className="absolute right-4 top-4 z-20 grid size-11 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 md:right-8 md:top-8"
           >
-            <X size={24} />
+            <X className="size-5" />
           </button>
 
-          {/* =================================================
-              PREVIOUS
-          ================================================= */}
           {gallery.length > 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                prevImage();
-              }}
-              className="absolute left-3 top-1/2 z-[10002] -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-md transition hover:bg-white/20 md:left-6"
-              aria-label="Ảnh trước"
-            >
-              <ChevronLeft size={28} />
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  move(-1);
+                }}
+                aria-label="Ảnh trước"
+                className="absolute left-3 top-1/2 z-20 grid size-12 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 md:left-6"
+              >
+                <ChevronLeft className="size-6" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  move(1);
+                }}
+                aria-label="Ảnh tiếp theo"
+                className="absolute right-3 top-1/2 z-20 grid size-12 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 md:right-6"
+              >
+                <ChevronRight className="size-6" />
+              </button>
+            </>
           )}
 
-          {/* =================================================
-              FULL IMAGE
-
-              Giới hạn 90% màn hình.
-              Ảnh tự co lại để nhìn thấy TOÀN BỘ.
-          ================================================= */}
+          {/* Ảnh gốc, không crop */}
           <div
-            className="flex max-h-[90vh] max-w-[90vw] items-center justify-center"
+            className="relative z-0 h-full w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={currentImage}
-              alt={title}
-              className="block max-h-[90vh] max-w-[90vw] object-contain"
+            <Image
+              src={current}
+              alt={`${title} - ${index + 1}`}
+              fill
+              className="object-contain"
+              sizes="100vw"
+              quality={100}
             />
           </div>
 
-          {/* =================================================
-              NEXT
-          ================================================= */}
           {gallery.length > 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                nextImage();
-              }}
-              className="absolute right-3 top-1/2 z-[10002] -translate-y-1/2 rounded-full bg-white/10 p-3 text-white backdrop-blur-md transition hover:bg-white/20 md:right-6"
-              aria-label="Ảnh tiếp theo"
-            >
-              <ChevronRight size={28} />
-            </button>
-          )}
-
-          {/* =================================================
-              COUNTER
-          ================================================= */}
-          {gallery.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 z-[10002] -translate-x-1/2 rounded-full bg-black/60 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
+            <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/45 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md md:bottom-8">
               {index + 1} / {gallery.length}
             </div>
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }
