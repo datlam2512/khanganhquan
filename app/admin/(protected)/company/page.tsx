@@ -63,13 +63,6 @@ export default function Company() {
         className="space-y-6 rounded-[24px] border border-[#dfe8e2] bg-white p-6 shadow-[0_8px_24px_rgba(20,35,27,.035)] md:p-8"
       >
         <div className="grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
-          <ImageUploader
-            value={form.logo_path}
-            bucket_id ="company-images"
-            folder="company"
-            label="Logo công ty"
-            onChange={(v) => update("logo_path", v)}
-          />
           <div className="grid gap-4 md:grid-cols-2">
             <Input
               value={form.company_name_vi}
@@ -137,18 +130,6 @@ export default function Company() {
           onChange={(e) => update("website", e.target.value)}
           placeholder="Website"
         />
-        <div className="grid gap-4 md:grid-cols-2">
-          <Input
-            value={form.business_hours_vi}
-            onChange={(e) => update("business_hours_vi", e.target.value)}
-            placeholder="Giờ làm việc VI"
-          />
-          <Input
-            value={form.business_hours_en}
-            onChange={(e) => update("business_hours_en", e.target.value)}
-            placeholder="Business hours EN"
-          />
-        </div>
         <div>
           <Button type="submit">Lưu thông tin</Button>
           {msg && <span className="ml-3 text-sm text-[#246D43]">{msg}</span>}

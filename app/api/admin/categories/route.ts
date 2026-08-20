@@ -8,8 +8,7 @@ const Schema = z.object({
   name_en: z.string().min(1),
   description_vi: z.string().optional(),
   description_en: z.string().optional(),
-  image_path: z.string().optional(),
-  sort_order: z.coerce.number().int().default(0),
+  image: z.string().optional(),
   published: z.boolean().default(true),
 });
 

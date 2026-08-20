@@ -3,7 +3,10 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/admin";
 
 const Schema = z.object({
-  slug: z.string().min(1),
+  slug: z
+    .string()
+    .min(1, "Slug không được để trống")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug phải có dạng: du-an-cong-trinh"),
   title_vi: z.string().min(1),
   title_en: z.string().min(1),
   description_vi: z.string().optional(),
@@ -65,15 +68,27 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const s = await requireAdmin();
-    if (!s) return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
+    if (!s)
+      return NextResponse.json(
+        { error: "Supabase is not configured." },
+        { status: 503 },
+      );
     const body = Schema.parse(await req.json());
-    const { data, error } = await s.from("projects").insert(body).select().single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    const { data, error } = await s
+      .from("projects")
+      .insert(body)
+      .select()
+      .single();
+    if (error)
+      return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ data });
   } catch (err) {
     console.error("POST /api/admin/projects error:", err);
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: "Dữ liệu không hợp lệ", details: err.issues }, { status: 400 });
+      return NextResponse.json(
+        { error: "Dữ liệu không hợp lệ", details: err.issues },
+        { status: 400 },
+      );
     }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Lỗi không xác định" },
@@ -85,16 +100,31 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const s = await requireAdmin();
-    if (!s) return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
-    const body = Schema.extend({ id: z.string().uuid() }).parse(await req.json());
+    if (!s)
+      return NextResponse.json(
+        { error: "Supabase is not configured." },
+        { status: 503 },
+      );
+    const body = Schema.extend({ id: z.string().min(1) }).parse(
+      await req.json(),
+    );
     const { id, ...values } = body;
-    const { data, error } = await s.from("projects").update(values).eq("id", id).select().single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    const { data, error } = await s
+      .from("projects")
+      .update(values)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error)
+      return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ data });
   } catch (err) {
     console.error("PUT /api/admin/projects error:", err);
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: "Dữ liệu không hợp lệ", details: err.issues }, { status: 400 });
+      return NextResponse.json(
+        { error: "Dữ liệu không hợp lệ", details: err.issues },
+        { status: 400 },
+      );
     }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Lỗi không xác định" },
@@ -106,15 +136,23 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const s = await requireAdmin();
-    if (!s) return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
-    const { id } = z.object({ id: z.string().uuid() }).parse(await req.json());
+    if (!s)
+      return NextResponse.json(
+        { error: "Supabase is not configured." },
+        { status: 503 },
+      );
+    const { id } = z.object({ id: z.string().min(1) }).parse(await req.json());
     const { error } = await s.from("projects").delete().eq("id", id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error)
+      return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("DELETE /api/admin/projects error:", err);
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: "Dữ liệu không hợp lệ", details: err.issues }, { status: 400 });
+      return NextResponse.json(
+        { error: "Dữ liệu không hợp lệ", details: err.issues },
+        { status: 400 },
+      );
     }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Lỗi không xác định" },
