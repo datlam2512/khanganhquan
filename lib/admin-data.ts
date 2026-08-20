@@ -29,7 +29,6 @@ export async function getAdminCategories(): Promise<Category[]> {
   const { data, error } = await supabase
     .from("categories")
     .select("*")
-    .order("sort_order", { ascending: true });
 
   if (error || !data) return [];
 
@@ -145,31 +144,24 @@ export async function getAdminProducts(options: {
     published: Boolean(p.published),
   }));
 
-  const search = options.search?.trim();
-  if (search) {
-    const normalize = (value: string) =>
-      value
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-    const q = normalize(search);
-    mapped = mapped.filter((product) => {
-      const haystack = normalize(
-        [
-          product.name,
-          product.nameEn,
-          product.code,
-          product.short,
-          product.shortEn,
-          product.description,
-          product.descriptionEn,
-          product.material,
-          product.materialEn,
-        ].join(" "),
-      );
-      return haystack.includes(q);
-    });
-  }
+const search = options.search?.trim();
+
+if (search) {
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+  const q = normalize(search);
+
+  mapped = mapped.filter((product) => {
+    return (
+      normalize(product.name).includes(q) ||
+      normalize(product.nameEn).includes(q)
+    );
+  });
+}
 
   return mapped;
 }

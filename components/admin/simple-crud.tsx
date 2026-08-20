@@ -11,7 +11,7 @@ type Field = {
   required?: boolean;
   textarea?: boolean;
   image?: boolean;
-  bucket_id ?: string;
+  bucket_id?: string;
   folder?: string;
 };
 export function SimpleCrud({
@@ -36,6 +36,11 @@ export function SimpleCrud({
   const [editing, setEditing] = useState<string>("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [deleting, setDeleting] = useState(false);
   function edit(item: Record<string, unknown>) {
     setEditing(String(item[idKey] ?? ""));
     const next: Record<string, string | boolean> = {};
@@ -71,16 +76,31 @@ export function SimpleCrud({
     else setItems((list) => [data.data, ...list]);
     reset();
   }
-  async function remove(id: string) {
-    if (!confirm("Xóa mục này?")) return;
+  function remove(id: string, name: string) {
+    setDeleteTarget({ id, name });
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+
+    setDeleting(true);
+
     const res = await fetch(endpoint, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id: deleteTarget.id }),
     });
+
+    setDeleting(false);
+
     if (res.ok) {
-      setItems((list) => list.filter((x) => String(x[idKey]) !== id));
+      setItems((list) =>
+        list.filter((x) => String(x[idKey]) !== deleteTarget.id),
+      );
       setMessage("Đã xóa.");
+      setDeleteTarget(null);
+    } else {
+      setMessage("Không thể xóa.");
     }
   }
   return (
@@ -124,7 +144,12 @@ export function SimpleCrud({
                     <Button
                       type="button"
                       variant="ghost"
-                      onClick={() => remove(String(item[idKey]))}
+                      onClick={() =>
+                        remove(
+                          String(item[idKey]),
+                          String(item[nameKey] ?? "mục này"),
+                        )
+                      }
                     >
                       Xóa
                     </Button>
@@ -160,7 +185,7 @@ export function SimpleCrud({
                 <ImageUploader
                   key={f.key}
                   value={String(form[f.key] ?? "")}
-                  bucket_id ={f.bucket_id }
+                  bucket_id={f.bucket_id}
                   folder={f.folder}
                   label={f.label || f.placeholder}
                   onChange={(v) => setForm((x) => ({ ...x, [f.key]: v }))}
@@ -209,6 +234,60 @@ export function SimpleCrud({
           )}
         </form>
       </div>
+      {deleteTarget && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className="h-6 w-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
+          />
+        </svg>
+      </div>
+
+      <h3 className="mt-4 text-lg font-extrabold text-[#173826]">
+        Xóa {title.toLowerCase()}?
+      </h3>
+
+      <p className="mt-2 text-sm leading-6 text-[#718078]">
+        Bạn có chắc muốn xóa{" "}
+        <span className="font-bold text-[#173826]">
+          &quot;{deleteTarget.name}&quot;
+        </span>
+        ? Hành động này không thể hoàn tác.
+      </p>
+
+      <div className="mt-6 flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setDeleteTarget(null)}
+          disabled={deleting}
+        >
+          Hủy
+        </Button>
+
+        <Button
+          type="button"
+          onClick={confirmDelete}
+          disabled={deleting}
+          className="bg-red-600 text-white hover:bg-red-700"
+        >
+          {deleting ? "Đang xóa…" : "Xóa"}
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

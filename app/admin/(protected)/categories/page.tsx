@@ -14,9 +14,9 @@ type CategoryRow = {
 
 export default async function Categories() {
   const supabase = await requireAdmin();
-  const { data } = supabase
-    ? await supabase.from("categories").select("*").order("sort_order", { ascending: true })
-    : { data: [] as CategoryRow[] };
+  const { data, error } = supabase
+    ? await supabase.from("categories").select("*")
+    : { data: [] as CategoryRow[], error: null };
   const items = (data ?? []) as CategoryRow[];
   return (
     <div>
@@ -32,12 +32,10 @@ export default async function Categories() {
         initialItems={items.map((x) => ({
           id: x.id,
           slug: x.slug,
-          name: x.name_vi,
           name_vi: x.name_vi,
           name_en: x.name_en,
           description_vi: x.description_vi ?? "",
           description_en: x.description_en ?? "",
-          image_path: x.image_path ?? "",
           published: x.published,
         }))}
         fields={[
@@ -71,11 +69,11 @@ export default async function Categories() {
             label: "Ảnh danh mục",
             placeholder: "Upload ảnh",
             image: true,
-            bucket_id : "product-images",
+            bucket_id: "image-project",
             folder: "categories",
           },
         ]}
-        nameKey="name"
+       nameKey="name_vi"
       />
     </div>
   );

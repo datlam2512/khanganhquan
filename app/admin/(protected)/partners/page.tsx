@@ -62,7 +62,7 @@ export default async function Partners() {
             label: "Logo đối tác",
             placeholder: "Upload logo",
             image: true,
-            bucket_id : "partner-images",
+            bucket_id : "image-project",
             folder: "partners",
           },
         ]}

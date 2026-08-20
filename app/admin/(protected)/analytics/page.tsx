@@ -2,8 +2,235 @@ import { hasSupabaseConfig } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { AnalyticsCharts } from "@/components/admin/analytics-charts";
 import { DemoAnalyticsBootstrap } from "@/components/admin/demo-analytics";
+import { AnalyticsRealtime } from "@/components/admin/analytics-realtime";
 import { Eye, Users, Activity } from "lucide-react";
-const demo={total:184,today:27,last7:184,unique:91,daily:[42,31,26,35,18,19,13].map((views,i)=>({label:["T2","T3","T4","T5","T6","T7","CN"][i],views,visitors:Math.round(views*.55)})),pages:[{path:"/vi",views:62},{path:"/vi/san-pham",views:41},{path:"/vi/du-an",views:29},{path:"/vi/gioi-thieu",views:24},{path:"/vi/lien-he",views:18}]};
-async function getData(){if(!hasSupabaseConfig())return demo;const s=await createClient();const since=new Date(Date.now()-7*86400000).toISOString();const {data}=await s.from("analytics_events").select("page_path,session_id,created_at").gte("created_at",since).order("created_at",{ascending:true}).limit(10000);const rows=data??[];const unique=new Set(rows.map(r=>r.session_id).filter(Boolean)).size;const today=rows.filter(r=>new Date(r.created_at).getTime()>=Date.now()-86400000).length;const dayMap=new Map<string,{views:number;visitors:Set<string>}>();const pageMap=new Map<string,number>();for(const r of rows){const key=new Intl.DateTimeFormat("vi-VN",{weekday:"short"}).format(new Date(r.created_at));const x=dayMap.get(key)??{views:0,visitors:new Set<string>()};x.views++;if(r.session_id)x.visitors.add(r.session_id);dayMap.set(key,x);if(r.page_path)pageMap.set(r.page_path,(pageMap.get(r.page_path)??0)+1);}const daily=Array.from(dayMap.entries()).slice(-7).map(([label,v])=>({label:label.replace("Thứ ","T"),views:v.views,visitors:v.visitors.size}));const pages=Array.from(pageMap.entries()).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([path,views])=>({path,views}));return{total:rows.length,today,last7:rows.length,unique,daily:daily.length?daily:demo.daily,pages:pages.length?pages:demo.pages};}
-const Metric=({icon:Icon,label,value,sub}:{icon:typeof Eye;label:string;value:number;sub:string})=><div className="rounded-2xl border border-[#dfe8e2] bg-white p-5 shadow-[0_8px_24px_rgba(20,35,27,.035)]"><div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-[#0b9f4a]"><Icon className="size-5"/></div><div className="mt-4 text-[11px] font-extrabold uppercase tracking-[.13em] text-[#87938c]">{label}</div><div className="mt-1 text-3xl font-display font-extrabold tracking-[-.04em]">{value.toLocaleString("vi-VN")}</div><div className="mt-1 text-xs text-[#7b8981]">{sub}</div></div>;
-export default async function Analytics(){const data=await getData();return <div className="mx-auto max-w-[1500px]"><DemoAnalyticsBootstrap/><div className="mb-7"><div className="section-label">Website analytics</div><h1 className="heading-display mt-2 text-3xl font-extrabold md:text-4xl">Analytics</h1><p className="mt-2 text-sm leading-6 text-[#718078]">Biểu đồ và chỉ số truy cập giúp theo dõi website trực quan hơn.</p></div><div className="grid gap-4 md:grid-cols-3"><Metric icon={Eye} label="Page views" value={data.total} sub={`24 giờ: ${data.today}`}/><Metric icon={Users} label="Unique visitors" value={data.unique} sub="Phiên truy cập ẩn danh"/><Metric icon={Activity} label="7 ngày" value={data.last7} sub="Tổng lượt xem trong kỳ"/></div><div className="mt-5"><AnalyticsCharts daily={data.daily} pages={data.pages}/></div><div className="mt-5 rounded-2xl border border-[#dfe8e2] bg-white p-5"><div className="text-sm font-extrabold">Dữ liệu được theo dõi</div><p className="mt-2 max-w-3xl text-sm leading-7 text-[#718078]">Page path, anonymous session ID, device type, browser, referrer và timestamp. Không tracking tài khoản người dùng public.</p></div></div>}
+
+const demo = {
+  total: 184,
+  today: 27,
+  last7: 184,
+  unique: 91,
+
+  daily: [42, 31, 26, 35, 18, 19, 13].map((views, i) => ({
+    label: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"][i],
+    views,
+    visitors: Math.round(views * 0.55),
+  })),
+
+  pages: [
+    { path: "/vi", views: 62 },
+    { path: "/vi/san-pham", views: 41 },
+    { path: "/vi/du-an", views: 29 },
+    { path: "/vi/gioi-thieu", views: 24 },
+    { path: "/vi/lien-he", views: 18 },
+  ],
+};
+
+async function getData() {
+  if (!hasSupabaseConfig()) return demo;
+
+  const s = await createClient();
+
+  const since = new Date(Date.now() - 7 * 86400000).toISOString();
+
+  const { data, error } = await s
+    .from("analytics_events")
+    .select("page_path,session_id,created_at")
+    .gte("created_at", since)
+    .order("created_at", {
+      ascending: true,
+    })
+    .limit(10000);
+
+  if (error) {
+    console.error("Analytics fetch error:", error);
+    return demo;
+  }
+
+  const rows = data ?? [];
+
+  /*
+   * UNIQUE VISITORS
+   */
+  const unique = new Set(rows.map((r) => r.session_id).filter(Boolean)).size;
+
+  /*
+   * TODAY
+   */
+  const now = Date.now();
+
+  const today = rows.filter(
+    (r) => new Date(r.created_at).getTime() >= now - 86400000,
+  ).length;
+
+  /*
+   * DAILY
+   */
+  const dayMap = new Map<
+    string,
+    {
+      views: number;
+      visitors: Set<string>;
+    }
+  >();
+
+  /*
+   * PAGES
+   */
+  const pageMap = new Map<string, number>();
+
+  for (const r of rows) {
+    const date = new Date(r.created_at);
+
+    const key = new Intl.DateTimeFormat("vi-VN", {
+      weekday: "short",
+    }).format(date);
+
+    const x = dayMap.get(key) ?? {
+      views: 0,
+      visitors: new Set<string>(),
+    };
+
+    x.views++;
+
+    if (r.session_id) {
+      x.visitors.add(r.session_id);
+    }
+
+    dayMap.set(key, x);
+
+    if (r.page_path) {
+      pageMap.set(r.page_path, (pageMap.get(r.page_path) ?? 0) + 1);
+    }
+  }
+
+  /*
+   * DAILY DATA
+   */
+  const daily = Array.from(dayMap.entries())
+    .slice(-7)
+    .map(([label, v]) => ({
+      label: label.replace("Thứ ", "T"),
+      views: v.views,
+      visitors: v.visitors.size,
+    }));
+
+  /*
+   * TOP PAGES
+   */
+  const pages = Array.from(pageMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([path, views]) => ({
+      path,
+      views,
+    }));
+
+  return {
+    total: rows.length,
+    today,
+    last7: rows.length,
+    unique,
+
+    daily: daily.length ? daily : demo.daily,
+
+    pages: pages.length ? pages : demo.pages,
+  };
+}
+
+const Metric = ({
+  icon: Icon,
+  label,
+  value,
+  sub,
+}: {
+  icon: typeof Eye;
+  label: string;
+  value: number;
+  sub: string;
+}) => (
+  <div className="rounded-2xl border border-[#dfe8e2] bg-white p-5 shadow-[0_8px_24px_rgba(20,35,27,.035)]">
+    <div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-[#0b9f4a]">
+      <Icon className="size-5" />
+    </div>
+
+    <div className="mt-4 text-[11px] font-extrabold uppercase tracking-[.13em] text-[#87938c]">
+      {label}
+    </div>
+
+    <div className="mt-1 text-3xl font-display font-extrabold tracking-[-.04em]">
+      {value.toLocaleString("vi-VN")}
+    </div>
+
+    <div className="mt-1 text-xs text-[#7b8981]">{sub}</div>
+  </div>
+);
+
+export default async function Analytics() {
+  const data = await getData();
+
+  return (
+    <div className="mx-auto max-w-[1500px]">
+      {/* REALTIME LISTENER */}
+      <AnalyticsRealtime />
+
+      <DemoAnalyticsBootstrap />
+
+      <div className="mb-7">
+        <div className="section-label">Website analytics</div>
+
+        <h1 className="heading-display mt-2 text-3xl font-extrabold md:text-4xl">
+          Analytics
+        </h1>
+
+        <p className="mt-2 text-sm leading-6 text-[#718078]">
+          Biểu đồ và chỉ số truy cập giúp theo dõi website trực quan hơn.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Metric
+          icon={Eye}
+          label="Page views"
+          value={data.total}
+          sub={`24 giờ: ${data.today}`}
+        />
+
+        <Metric
+          icon={Users}
+          label="Unique visitors"
+          value={data.unique}
+          sub="Phiên truy cập ẩn danh"
+        />
+
+        <Metric
+          icon={Activity}
+          label="7 ngày"
+          value={data.last7}
+          sub="Tổng lượt xem trong kỳ"
+        />
+      </div>
+
+      <div className="mt-5">
+        <AnalyticsCharts daily={data.daily} pages={data.pages} />
+      </div>
+
+      <div className="mt-5 rounded-2xl border border-[#dfe8e2] bg-white p-5">
+        <div className="flex items-center gap-2">
+          <span className="relative flex size-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#0b9f4a] opacity-75" />
+            <span className="relative inline-flex size-2.5 rounded-full bg-[#0b9f4a]" />
+          </span>
+
+          <div className="text-sm font-extrabold">Analytics đang hoạt động</div>
+        </div>
+
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-[#718078]">
+          Dữ liệu được cập nhật tự động khi có lượt truy cập mới. Page path,
+          anonymous session ID, device type, browser, referrer và timestamp được
+          ghi nhận.
+        </p>
+      </div>
+    </div>
+  );
+}

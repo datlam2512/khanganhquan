@@ -725,7 +725,7 @@ export function ProductForm({
              * Vì vậy lấy ảnh đầu tiên.
              */
             value={form.images[0] ?? ""}
-            bucket_id="product-images"
+            bucket_id="image-project"
             folder="products"
             label="Ảnh sản phẩm"
             onChange={(path) => {
