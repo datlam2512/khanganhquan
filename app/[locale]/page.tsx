@@ -24,6 +24,10 @@ import { CompanyContact } from "@/components/public/company-contact";
 import { Reveal } from "@/components/public/reveal";
 import { PartnersMarquee } from "@/components/public/partners-marquee";
 
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
+
 type HomeProps = { params: Promise<{ locale: string }> };
 
 export default async function Home({ params }: HomeProps) {

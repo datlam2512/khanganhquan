@@ -1,12 +1,35 @@
 import Image from "next/image";
-import { getLocale } from "@/lib/i18n";
+import type { Metadata } from "next";
+import { getLocale, getDictionary } from "@/lib/i18n";
 import { getPartners } from "@/lib/data";
 import { SectionHeading } from "@/components/public/section-heading";
+
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
 
 const localLogos = [
   ["PV GAS", "/partners/pvgas.png"], ["PTSC", "/partners/ptsc.png"], ["PVC", "/partners/pvc.png"], ["PVC-PT", "/partners/pvc-pt.png"], ["PV OIL", "/partners/pvoil.png"],
   ["PV GAS North", "/partners/gas-north.png"], ["PV GAS South", "/partners/gas-south.png"], ["BSR", "/partners/bsr.png"], ["Saigon Petro", "/partners/saigon-petro.png"], ["Petrolimex", "/partners/petrolimex.png"],
 ] as const;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = getLocale((await params).locale);
+  const t = getDictionary(locale).meta.partners;
+  return {
+    title: t.title,
+    description: t.description,
+    alternates: {
+      canonical: `/${locale}/partners`,
+      languages: { vi: "/vi/partners", en: "/en/partners", "x-default": "/vi/partners" },
+    },
+    openGraph: { title: t.title, description: t.description, type: "website" },
+  };
+}
 
 export default async function Partners({ params }: { params: Promise<{ locale: string }> }) {
   const locale = getLocale((await params).locale);

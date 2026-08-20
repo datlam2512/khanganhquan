@@ -1,7 +1,23 @@
 import { SimpleCrud } from "@/components/admin/simple-crud";
-import { getCategories } from "@/lib/data";
+import { requireAdmin } from "@/lib/admin";
+
+type CategoryRow = {
+  id: string;
+  slug: string;
+  name_vi: string;
+  name_en: string;
+  description_vi: string | null;
+  description_en: string | null;
+  image_path: string | null;
+  published: boolean;
+};
+
 export default async function Categories() {
-  const items = await getCategories();
+  const supabase = await requireAdmin();
+  const { data } = supabase
+    ? await supabase.from("categories").select("*").order("sort_order", { ascending: true })
+    : { data: [] as CategoryRow[] };
+  const items = (data ?? []) as CategoryRow[];
   return (
     <div>
       <h1 className="heading-display text-3xl font-extrabold tracking-[-.045em] md:text-4xl">
@@ -16,12 +32,12 @@ export default async function Categories() {
         initialItems={items.map((x) => ({
           id: x.id,
           slug: x.slug,
-          name: x.name,
-          name_vi: x.name,
-          name_en: x.nameEn,
-          description: x.description,
-          description_en: x.descriptionEn,
-          image_path: "",
+          name: x.name_vi,
+          name_vi: x.name_vi,
+          name_en: x.name_en,
+          description_vi: x.description_vi ?? "",
+          description_en: x.description_en ?? "",
+          image_path: x.image_path ?? "",
           published: x.published,
         }))}
         fields={[

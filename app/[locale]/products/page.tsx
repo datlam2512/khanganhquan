@@ -1,9 +1,34 @@
+import type { Metadata } from "next";
 import { getLocale, getDictionary } from "@/lib/i18n";
 import { getCategories, getProducts } from "@/lib/data";
 import { ProductCard } from "@/components/public/product-card";
 import { Input } from "@/components/ui/input";
 import { SectionHeading } from "@/components/public/section-heading";
 import { ProductFilters } from "@/components/public/product-filter";
+
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = getLocale((await params).locale);
+  const t = getDictionary(locale).meta.products;
+  return {
+    title: t.title,
+    description: t.description,
+    // Canonical always points to the base listing (not the filtered/search
+    // query-string variants) to avoid duplicate-content across ?category=...
+    alternates: {
+      canonical: `/${locale}/products`,
+      languages: { vi: "/vi/products", en: "/en/products", "x-default": "/vi/products" },
+    },
+    openGraph: { title: t.title, description: t.description, type: "website" },
+  };
+}
 
 export default async function Products({
   params,

@@ -1,8 +1,8 @@
-import { getCategories } from "@/lib/data";
+import { getAdminCategories } from "@/lib/admin-data";
 import { ProductForm } from "@/components/admin/product-form";
 
 export default async function NewProduct() {
-  const categories = await getCategories();
+  const categories = await getAdminCategories();
   return (
     <div className="max-w-6xl">
       <h1 className="heading-display text-3xl font-extrabold tracking-[-.045em] md:text-4xl">

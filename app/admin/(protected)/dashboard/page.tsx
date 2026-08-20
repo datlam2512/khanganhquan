@@ -1,4 +1,5 @@
-import { getCategories, getProducts, getProjects, hasSupabaseConfig } from "@/lib/data";
+import { getProjects, hasSupabaseConfig } from "@/lib/data";
+import { getAdminCategories, getAdminProducts } from "@/lib/admin-data";
 import { createClient } from "@/lib/supabase/server";
 import { AnalyticsCharts } from "@/components/admin/analytics-charts";
 import { DemoAnalyticsBootstrap } from "@/components/admin/demo-analytics";
@@ -22,7 +23,7 @@ async function getAnalytics(){
 }
 const Stat=({icon:Icon,label,value,detail}:{icon:typeof Package;label:string;value:number;detail:string})=><div className="rounded-2xl border border-[#dfe8e2] bg-white p-5 shadow-[0_8px_24px_rgba(20,35,27,.035)]"><div className="flex items-start justify-between"><div className="grid size-10 place-items-center rounded-xl bg-[#eaf7ef] text-[#0b9f4a]"><Icon className="size-5"/></div><ArrowUpRight className="size-4 text-[#a1ada6]"/></div><div className="mt-5 text-[11px] font-extrabold uppercase tracking-[.13em] text-[#87938c]">{label}</div><div className="mt-1 text-3xl font-display font-extrabold tracking-[-.04em] text-[#173826]">{value.toLocaleString("vi-VN")}</div><div className="mt-1 text-xs text-[#7b8981]">{detail}</div></div>;
 export default async function Dashboard(){
- const [products,categories,projects,analytics]=await Promise.all([getProducts(),getCategories(),getProjects(),getAnalytics()]);
+ const [products,categories,projects,analytics]=await Promise.all([getAdminProducts(),getAdminCategories(),getProjects(),getAnalytics()]);
  return <div className="mx-auto max-w-[1500px]"><DemoAnalyticsBootstrap/>
   <div className="mb-7 flex flex-col justify-between gap-4 xl:flex-row xl:items-end"><div><div className="section-label">Tổng quan</div><h1 className="heading-display mt-2 text-3xl font-extrabold tracking-[-.045em] md:text-4xl">Dashboard</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-[#718078]">Theo dõi nội dung website và hiệu quả truy cập từ một màn hình duy nhất.</p></div><div className="rounded-xl border border-[#dfe8e2] bg-white px-4 py-2.5 text-xs font-bold text-[#5d7065]">Dữ liệu 7 ngày gần nhất</div></div>
   <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"><Stat icon={Package} label="Sản phẩm" value={products.length} detail="Đang có trong catalog"/><Stat icon={FolderTree} label="Danh mục" value={categories.length} detail="Nhóm sản phẩm"/><Stat icon={BriefcaseBusiness} label="Dự án" value={projects.length} detail="Dự án được công bố"/><Stat icon={Users} label="Unique visitors" value={analytics.uniqueSessions} detail="Trong 7 ngày gần nhất"/></div>

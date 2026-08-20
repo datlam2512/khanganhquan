@@ -5,6 +5,10 @@ import { getProject, getProjects } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { ProjectGallery } from "@/components/public/project-gallery";
 
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
+
 export async function generateMetadata({
   params,
 }: {
@@ -120,10 +124,6 @@ export default async function ProjectDetail({
                         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
 
                         <div className="absolute bottom-4 left-4 right-4">
-                          <div className="text-[10px] font-extrabold uppercase tracking-[.14em] text-white/75">
-                            {item.location}
-                            {item.year ? ` · ${item.year}` : ""}
-                          </div>
                         </div>
                       </div>
 

@@ -13,9 +13,22 @@ export function Header({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
   const [q, setQ] = useState("");
   const [languageOpen, setLanguageOpen] = useState(false);
   const languageRef = useRef<HTMLDivElement>(null);
+
+  function openMenu() {
+    setMenuMounted(true);
+    setOpen(true);
+  }
+
+  function closeMenu() {
+    // Trigger the slide-out/fade-out animation first; the actual unmount
+    // happens in the overlay's onAnimationEnd handler below once the
+    // "closed" animation finishes playing.
+    setOpen(false);
+  }
 
   const nav = [
     ["/", t.nav.home],
@@ -167,7 +180,7 @@ export function Header({ locale }: { locale: Locale }) {
 
           <button
             aria-label="Open menu"
-            onClick={() => setOpen(true)}
+            onClick={openMenu}
             className="grid size-10 place-items-center rounded-full border border-[#dfe8e2] bg-white text-[#1f3e2b] lg:hidden"
           >
             <Menu className="size-5" />
@@ -175,13 +188,18 @@ export function Header({ locale }: { locale: Locale }) {
         </div>
       </header>
 
-      {open && (
+      {menuMounted && (
         <div
-          className="fixed inset-0 z-50 bg-[#0d1a13]/40 backdrop-blur-sm lg:hidden"
-          onClick={() => setOpen(false)}
+          data-state={open ? "open" : "closed"}
+          className="fixed inset-0 z-50 bg-[#0d1a13]/40 backdrop-blur-sm duration-300 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:animate-in data-[state=open]:fade-in lg:hidden"
+          onClick={closeMenu}
+          onAnimationEnd={() => {
+            if (!open) setMenuMounted(false);
+          }}
         >
           <aside
-            className="ml-auto flex h-full w-[92%] max-w-sm flex-col bg-white p-5 shadow-2xl"
+            data-state={open ? "open" : "closed"}
+            className="ml-auto flex h-full w-[92%] max-w-sm flex-col bg-white p-5 shadow-2xl duration-300 data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:animate-in data-[state=open]:slide-in-from-right"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -194,7 +212,7 @@ export function Header({ locale }: { locale: Locale }) {
                 </span>
               </div>
               <button
-                onClick={() => setOpen(false)}
+                onClick={closeMenu}
                 aria-label="Close"
                 className="grid size-10 place-items-center rounded-full bg-[#f5f9f6]"
               >
@@ -215,7 +233,7 @@ export function Header({ locale }: { locale: Locale }) {
               {nav.map(([href, label]) => (
                 <Link
                   key={href}
-                  onClick={() => setOpen(false)}
+                  onClick={closeMenu}
                   href={`/${locale}${href === "/" ? "" : href}`}
                   className="block rounded-xl px-3 py-3.5 text-[15px] font-bold text-[#274632] hover:bg-[#edf8f1]"
                 >
@@ -225,7 +243,7 @@ export function Header({ locale }: { locale: Locale }) {
             </nav>
 
             <Link
-              onClick={() => setOpen(false)}
+              onClick={closeMenu}
               href={`/${locale}/contact#contact-form`}
               className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0f813b] px-5 text-sm font-extrabold text-white"
             >
@@ -239,14 +257,14 @@ export function Header({ locale }: { locale: Locale }) {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <Link
-                  onClick={() => setOpen(false)}
+                  onClick={closeMenu}
                   href={`/vi${localPath}`}
                   className={`rounded-xl border px-3 py-3 text-sm font-bold ${locale === "vi" ? "border-[#bed7c5] bg-[#edf8f1] text-[#0d6832]" : "border-[#dfe8e2] text-[#234632]"}`}
                 >
                   🇻🇳 Tiếng Việt
                 </Link>
                 <Link
-                  onClick={() => setOpen(false)}
+                  onClick={closeMenu}
                   href={`/en${localPath}`}
                   className={`rounded-xl border px-3 py-3 text-sm font-bold ${locale === "en" ? "border-[#bed7c5] bg-[#edf8f1] text-[#0d6832]" : "border-[#dfe8e2] text-[#234632]"}`}
                 >

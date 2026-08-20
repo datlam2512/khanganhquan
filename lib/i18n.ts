@@ -43,6 +43,28 @@ export const dictionaries = {
       desc: "Thiết bị, vật tư và giải pháp công nghiệp.",
       quick: "Liên kết nhanh",
     },
+    meta: {
+      about: {
+        title: "Giới thiệu công ty | Khang Anh Quân",
+        description:
+          "Khang Anh Quân chuyên cung cấp thiết bị, vật tư và giải pháp phục vụ các ngành công nghiệp, dầu khí, LPG, PCCC và hệ thống đường ống tại Việt Nam.",
+      },
+      products: {
+        title: "Sản phẩm | Khang Anh Quân",
+        description:
+          "Danh mục thiết bị công nghiệp: ống thép & phụ kiện, van công nghiệp, thiết bị PCCC, bơm và máy nén khí, thiết bị LPG và nhiều nhóm sản phẩm khác.",
+      },
+      partners: {
+        title: "Đối tác & khách hàng | Khang Anh Quân",
+        description:
+          "Khang Anh Quân đồng hành cùng các đối tác lớn trong ngành dầu khí, gas và năng lượng như PV GAS, PTSC, Petrolimex, Saigon Petro, BSR.",
+      },
+      contact: {
+        title: "Liên hệ | Khang Anh Quân",
+        description:
+          "Liên hệ Công ty TNHH Khang Anh Quân qua điện thoại, email hoặc tại trụ sở chính 39/1 Nguyễn Cửu Đàm, Tân Phú, TP. Hồ Chí Minh.",
+      },
+    },
   },
   en: {
     nav: {
@@ -85,6 +107,28 @@ export const dictionaries = {
     footer: {
       desc: "Industrial equipment, materials and solutions.",
       quick: "Quick links",
+    },
+    meta: {
+      about: {
+        title: "About Us | Khang Anh Quan",
+        description:
+          "Khang Anh Quan supplies equipment, materials and solutions for industrial, oil & gas, LPG, fire protection and piping systems in Vietnam.",
+      },
+      products: {
+        title: "Products | Khang Anh Quan",
+        description:
+          "Industrial equipment catalog: steel pipes & fittings, industrial valves, fire protection equipment, pumps & air compressors, LPG equipment and more.",
+      },
+      partners: {
+        title: "Partners & Clients | Khang Anh Quan",
+        description:
+          "Khang Anh Quan works alongside major oil & gas and energy partners including PV GAS, PTSC, Petrolimex, Saigon Petro, BSR.",
+      },
+      contact: {
+        title: "Contact | Khang Anh Quan",
+        description:
+          "Contact Khang Anh Quan Co., Ltd. by phone, email or at our head office, 39/1 Nguyen Cuu Dam, Tan Phu, Ho Chi Minh City.",
+      },
     },
   },
 } as const;

@@ -1,8 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
   title: "Khang Anh Quan | Thiết bị công nghiệp",
   description: "Khang Anh Quan corporate website",
 };

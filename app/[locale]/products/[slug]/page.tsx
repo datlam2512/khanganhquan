@@ -1,11 +1,57 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
+import type { Metadata } from "next";
 
 import { getLocale, getDictionary } from "@/lib/i18n";
 import { getCategories, getProduct, getProducts } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/public/product-card";
 import type { SpecGroup } from "@/lib/types";
+
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale, slug } = await params;
+  const locale = getLocale(rawLocale);
+  const product = await getProduct(slug);
+  if (!product) return {};
+
+  const name = locale === "vi" ? product.name : product.nameEn;
+  const shortDesc =
+    (locale === "vi" ? product.short : product.shortEn) ||
+    (locale === "vi" ? product.description : product.descriptionEn);
+  const title =
+    locale === "vi"
+      ? `${name}${product.code ? ` (${product.code})` : ""} | Khang Anh Quân`
+      : `${name}${product.code ? ` (${product.code})` : ""} | Khang Anh Quan`;
+  const primaryImage =
+    product.images.find((image) => image.isPrimary) ?? product.images[0];
+
+  return {
+    title,
+    description: shortDesc || title,
+    alternates: {
+      canonical: `/${locale}/products/${product.slug}`,
+      languages: {
+        vi: `/vi/products/${product.slug}`,
+        en: `/en/products/${product.slug}`,
+        "x-default": `/vi/products/${product.slug}`,
+      },
+    },
+    openGraph: {
+      title,
+      description: shortDesc || title,
+      type: "website",
+      images: primaryImage ? [{ url: primaryImage.imageUrl }] : undefined,
+    },
+  };
+}
 
 export default async function ProductDetail({
   params,
@@ -25,6 +71,13 @@ export default async function ProductDetail({
 
   if (!product) {
     notFound();
+  }
+
+  // If the requested slug doesn't exactly match the canonical (lowercase)
+  // slug — e.g. an old link to /products/Reducer — redirect permanently to
+  // the canonical URL so search engines consolidate signals onto one URL.
+  if (product.slug !== slug) {
+    redirect(`/${locale}/products/${product.slug}`);
   }
 
   // Product mới dùng categoryId
@@ -53,8 +106,25 @@ export default async function ProductDetail({
     )
     .slice(0, 4);
 
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    sku: product.code || undefined,
+    category: category ? (locale === "vi" ? category.name : category.nameEn) : undefined,
+    image: primaryImage ? [primaryImage.imageUrl] : undefined,
+    brand: { "@type": "Organization", name: "Khang Anh Quân" },
+  };
+
   return (
     <main>
+      {/* JSON-LD structured data for search engines (invisible, no visual impact) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+
       {/* =====================================================
           PRODUCT HERO
       ===================================================== */}
@@ -65,17 +135,17 @@ export default async function ProductDetail({
 
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-[#E4EBE6] bg-white">
             {primaryImage ? (
-              <Image
-                src={primaryImage.imageUrl}
-                alt={
-                  locale === "vi"
-                    ? primaryImage.altVi || name
-                    : primaryImage.altEn || name
-                }
-                fill
-                className="object-cover"
-                priority
-              />
+            <Image
+                  src={primaryImage.imageUrl}
+                  alt={
+                    locale === "vi"
+                      ? primaryImage.altVi || name
+                      : primaryImage.altEn || name
+                  }
+                  fill
+                  className="object-contain transition duration-500 group-hover:scale-[1.035]"
+                  sizes="(max-width:770000px) 100vw, 33vw"
+                />
             ) : (
               <div className="flex h-full items-center justify-center text-[#75837B]">
                 {locale === "vi" ? "Chưa có hình ảnh" : "No image"}

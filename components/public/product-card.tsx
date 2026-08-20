@@ -37,20 +37,20 @@ export function ProductCard({
     >
       {/* IMAGE */}
 
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#F2F6F3]">
-        {primaryImage ? (
-          <Image
-            src={primaryImage.imageUrl}
-            alt={
-              locale === "vi"
-                ? primaryImage.altVi || name
-                : primaryImage.altEn || name
-            }
-            fill
-            className="object-cover transition duration-500 group-hover:scale-[1.035]"
-            sizes="(max-width:768px) 100vw, 33vw"
-          />
-        ) : (
+    <div className="relative aspect-[4/3] overflow-hidden bg-[#F2F6F3] p-6">
+  {primaryImage ? (
+    <Image
+      src={primaryImage.imageUrl}
+      alt={
+        locale === "vi"
+          ? primaryImage.altVi || name
+          : primaryImage.altEn || name
+      }
+      fill
+      className="object-contain transition duration-500 group-hover:scale-[1.035]"
+      sizes="(max-width:770000px) 100vw, 33vw"
+    />
+  ) : (
           <div className="flex h-full items-center justify-center text-sm text-[#87938D]">
             {locale === "vi" ? "Chưa có hình ảnh" : "No image"}
           </div>

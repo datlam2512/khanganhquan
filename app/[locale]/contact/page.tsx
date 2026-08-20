@@ -1,8 +1,31 @@
+import type { Metadata } from "next";
 import { Mail, MapPin, Phone, Globe2 } from "lucide-react";
 import { getLocale, getDictionary } from "@/lib/i18n";
 import { getCompany } from "@/lib/data";
 import { SectionHeading } from "@/components/public/section-heading";
 import { Button } from "@/components/ui/button";
+
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = getLocale((await params).locale);
+  const t = getDictionary(locale).meta.contact;
+  return {
+    title: t.title,
+    description: t.description,
+    alternates: {
+      canonical: `/${locale}/contact`,
+      languages: { vi: "/vi/contact", en: "/en/contact", "x-default": "/vi/contact" },
+    },
+    openGraph: { title: t.title, description: t.description, type: "website" },
+  };
+}
 
 export default async function Contact({
   params,

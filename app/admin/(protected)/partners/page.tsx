@@ -1,8 +1,22 @@
 import { SimpleCrud } from "@/components/admin/simple-crud";
-import { getPartners } from "@/lib/data";
+import { requireAdmin } from "@/lib/admin";
+
+type PartnerRow = {
+  id: string;
+  name: string;
+  description_vi: string | null;
+  description_en: string | null;
+  website_url: string | null;
+  logo_path: string | null;
+  published: boolean;
+};
 
 export default async function Partners() {
-  const items = await getPartners();
+  const supabase = await requireAdmin();
+  const { data } = supabase
+    ? await supabase.from("partners").select("*").order("sort_order", { ascending: true })
+    : { data: [] as PartnerRow[] };
+  const items = (data ?? []) as PartnerRow[];
   return (
     <div>
       <h1 className="heading-display text-3xl font-extrabold tracking-[-.045em] md:text-4xl">
@@ -17,10 +31,10 @@ export default async function Partners() {
         initialItems={items.map((x) => ({
           id: x.id,
           name: x.name,
-          description_vi: x.description,
-          description_en: x.descriptionEn,
-          website_url: x.websiteUrl,
-          logo_path: x.logo,
+          description_vi: x.description_vi ?? "",
+          description_en: x.description_en ?? "",
+          website_url: x.website_url ?? "",
+          logo_path: x.logo_path ?? "",
           published: x.published,
         }))}
         fields={[

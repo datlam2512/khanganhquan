@@ -1,6 +1,29 @@
+import type { Metadata } from "next";
 import { getLocale, getDictionary } from "@/lib/i18n";
 import { SectionHeading } from "@/components/public/section-heading";
 import { getCompany } from "@/lib/data";
+
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = getLocale((await params).locale);
+  const t = getDictionary(locale).meta.about;
+  return {
+    title: t.title,
+    description: t.description,
+    alternates: {
+      canonical: `/${locale}/about`,
+      languages: { vi: "/vi/about", en: "/en/about", "x-default": "/vi/about" },
+    },
+    openGraph: { title: t.title, description: t.description, type: "website" },
+  };
+}
 
 const vi = {
   greeting: "CÔNG TY TNHH KHANG ANH QUÂN xin gửi tới Quý khách hàng lời chào trân trọng nhất.",

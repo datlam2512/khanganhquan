@@ -2,6 +2,10 @@ import Image from "next/image";
 import { getLocale, getDictionary } from "@/lib/i18n";
 import { getProjects } from "@/lib/data";
 import { SectionHeading } from "@/components/public/section-heading";
+
+// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
+// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
+export const revalidate = 60;
 export default async function Projects({
   params,
 }: {

@@ -1,12 +1,32 @@
+import { cache } from "react";
 import {
   categories as demoCategories,
   company as demoCompany,
   products as demoProducts,
   projects as demoProjects,
 } from "@/data/site";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Category, Product, Project } from "@/lib/types";
 import type { HeroSlide } from "@/components/public/hero";
+
+/**
+ * Next.js throws a special internal error to bail a route out of static
+ * generation into dynamic rendering whenever it touches a "dynamic API"
+ * (here: `cookies()` inside the Supabase server client). It is NOT a real
+ * failure — catching it as a normal error and logging/falling back to demo
+ * data (as this file used to do) produces misleading "Error loading..."
+ * console output during `next build` for every admin/dynamic route.
+ * We detect it here and rethrow so Next can handle it as intended.
+ */
+function isNextDynamicBailout(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "digest" in error &&
+    typeof (error as { digest?: unknown }).digest === "string" &&
+    (error as { digest: string }).digest.startsWith("DYNAMIC_SERVER_USAGE")
+  );
+}
 
 export function hasSupabaseConfig() {
   return Boolean(
@@ -24,11 +44,11 @@ function imageUrl(path: string | null | undefined, bucket: string) {
   return url;
 }
 
-export async function getHeroSlides(): Promise<HeroSlide[]> {
+export const getHeroSlides = cache(async function getHeroSlides(): Promise<HeroSlide[]> {
   const fallback: HeroSlide[] = [];
   if (!hasSupabaseConfig()) return fallback;
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("hero_slides")
       .select("id,image_path,sort_order,published")
@@ -46,15 +66,15 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
   } catch {
     return fallback;
   }
-}
+})
 
-export async function getCategories(): Promise<Category[]> {
+export const getCategories = cache(async function getCategories(): Promise<Category[]> {
   if (!hasSupabaseConfig()) {
     return demoCategories;
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
 
     const { data, error } = await supabase
       .from("categories")
@@ -97,12 +117,13 @@ export async function getCategories(): Promise<Category[]> {
       published: c.published,
     }));
   } catch (error) {
+    if (isNextDynamicBailout(error)) throw error;
     console.error("Error loading categories:", error);
     return demoCategories;
   }
-}
+})
 
-export async function getProducts(
+export const getProducts = cache(async function getProducts(
   options: { search?: string; category?: string } = {},
 ): Promise<Product[]> {
   const normalizeText = (value: string) =>
@@ -182,7 +203,7 @@ export async function getProducts(
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
 
     /*
      * =========================================================
@@ -380,30 +401,35 @@ export async function getProducts(
 
     return mapped;
   } catch (error) {
+    if (isNextDynamicBailout(error)) throw error;
     console.error("getProducts exception:", error);
 
     return demoFilter();
   }
-}
+})
 
-export async function getProduct(slug: string): Promise<Product | undefined> {
+export const getProduct = cache(async function getProduct(slug: string): Promise<Product | undefined> {
   const products = await getProducts();
-  return products.find((p) => p.slug === slug);
-}
+  const lower = slug.toLowerCase();
+  return (
+    products.find((p) => p.slug === slug) ??
+    products.find((p) => p.slug.toLowerCase() === lower)
+  );
+})
 
-export async function getProductById(id: string): Promise<Product | undefined> {
+export const getProductById = cache(async function getProductById(id: string): Promise<Product | undefined> {
   const products = await getProducts();
   return products.find((p) => p.id === id);
-}
+})
 
-export async function getProjects(): Promise<Project[]> {
+export const getProjects = cache(async function getProjects(): Promise<Project[]> {
   if (!hasSupabaseConfig())
     return demoProjects.map((p) => ({
       ...p,
       gallery: p.gallery?.length ? p.gallery : [p.coverImage],
     }));
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("projects")
       .select(
@@ -454,18 +480,18 @@ export async function getProjects(): Promise<Project[]> {
       gallery: p.gallery?.length ? p.gallery : [p.coverImage],
     }));
   }
-}
+})
 
-export async function getProject(slug: string) {
+export const getProject = cache(async function getProject(slug: string) {
   const list = await getProjects();
   const project = list.find((p) => p.slug === slug);
   return project;
-}
+})
 
-export async function getCompany() {
+export const getCompany = cache(async function getCompany() {
   if (!hasSupabaseConfig()) return demoCompany;
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("company_settings")
       .select("*")
@@ -489,7 +515,7 @@ export async function getCompany() {
   } catch {
     return demoCompany;
   }
-}
+})
 
 export type Partner = {
   id: string;
@@ -501,7 +527,7 @@ export type Partner = {
   published: boolean;
 };
 
-export async function getPartners(): Promise<Partner[]> {
+export const getPartners = cache(async function getPartners(): Promise<Partner[]> {
   const demo: Partner[] = [
     {
       id: "itron",
@@ -605,7 +631,7 @@ export async function getPartners(): Promise<Partner[]> {
   ];
   if (!hasSupabaseConfig()) return demo;
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("partners")
       .select(
@@ -626,4 +652,4 @@ export async function getPartners(): Promise<Partner[]> {
   } catch {
     return demo;
   }
-}
+})

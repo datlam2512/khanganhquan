@@ -8,6 +8,7 @@ import type { Category, Product, SpecGroup } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/admin/image-uploader";
+import { slugify } from "@/lib/utils";
 
 type ProductFormProps = {
   categories: Category[];
@@ -204,7 +205,7 @@ export function ProductForm({
     // ---------------------------------------------------
 
     const payload = {
-      slug: form.slug.trim(),
+      slug: slugify(form.slug.trim()),
 
       code: form.code.trim() || null,
 
@@ -529,7 +530,7 @@ export function ProductForm({
               onChange={(event) =>
                 update(
                   "slug",
-                  event.target.value,
+                  slugify(event.target.value),
                 )
               }
             />
@@ -724,7 +725,7 @@ export function ProductForm({
              * Vì vậy lấy ảnh đầu tiên.
              */
             value={form.images[0] ?? ""}
-            bucket_id="image-project"
+            bucket_id="product-images"
             folder="products"
             label="Ảnh sản phẩm"
             onChange={(path) => {
