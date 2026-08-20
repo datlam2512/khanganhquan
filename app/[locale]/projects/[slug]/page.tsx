@@ -89,7 +89,7 @@ export default async function ProjectDetail({
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-[#66746d]">
                     {locale === "vi"
                       ? "Khám phá thêm những dự án khác của Khang Anh Quân."
-                      : "Explore more projects completed by Khang Anh Quân."}
+                      : "Explore more projects completed by Khang Anh Quan."}
                   </p>
                 </div>
 

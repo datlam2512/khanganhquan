@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import { getLocale, getDictionary } from "@/lib/i18n";
 import { getCategories, getProducts } from "@/lib/data";
 import { ProductCard } from "@/components/public/product-card";
-import { Input } from "@/components/ui/input";
 import { SectionHeading } from "@/components/public/section-heading";
 import { ProductFilters } from "@/components/public/product-filter";
 
-// Cho phép Next.js cache trang này (ISR) thay vì render động 100% mỗi
-// lần có request, giúp việc chuyển trang nhanh hơn nhiều.
 export const revalidate = 60;
 
 export async function generateMetadata({
@@ -17,16 +14,23 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const locale = getLocale((await params).locale);
   const t = getDictionary(locale).meta.products;
+
   return {
     title: t.title,
     description: t.description,
-    // Canonical always points to the base listing (not the filtered/search
-    // query-string variants) to avoid duplicate-content across ?category=...
     alternates: {
       canonical: `/${locale}/products`,
-      languages: { vi: "/vi/products", en: "/en/products", "x-default": "/vi/products" },
+      languages: {
+        vi: "/vi/products",
+        en: "/en/products",
+        "x-default": "/vi/products",
+      },
     },
-    openGraph: { title: t.title, description: t.description, type: "website" },
+    openGraph: {
+      title: t.title,
+      description: t.description,
+      type: "website",
+    },
   };
 }
 
@@ -39,12 +43,19 @@ export default async function Products({
 }) {
   const locale = getLocale((await params).locale);
   const t = getDictionary(locale);
+
   const sp = await searchParams;
+
   const q = sp.search?.trim() ?? "";
   const category = sp.category ?? "";
+
   const [categories, list] = await Promise.all([
     getCategories(),
-    getProducts({ search: q, category }),
+    getProducts({
+      search: q,
+      category,
+      locale,
+    }),
   ]);
 
   return (
@@ -56,15 +67,18 @@ export default async function Products({
             title={t.nav.products}
             description={
               locale === "vi"
-                ? "Tìm kiếm theo tên, mã sản phẩm, category, vật liệu, tiêu chuẩn hoặc mô tả."
-                : "Search by name, product code, category, material, standards or description."
+                ? "Tìm kiếm sản phẩm theo tên hoặc lọc theo danh mục."
+                : "Search products by name or filter by category."
             }
           />
+
           <ProductFilters
             categories={categories}
             initialSearch={q}
             initialCategory={category}
+            locale={locale}
           />
+
           <div className="mt-4 text-sm text-[#64726A]">
             {list.length} {t.search.results}
             {q ? ` · “${q}”` : ""}

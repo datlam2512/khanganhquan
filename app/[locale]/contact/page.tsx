@@ -59,7 +59,7 @@ export default async function Contact({
               {locale === "vi" ? "Thông tin công ty" : "Company contact"}
             </div>
             <h2 className="heading-display mt-3 text-3xl font-extrabold tracking-[-.04em] text-[#173826] md:text-4xl">
-              {company.name}
+              {locale === "vi" ? company.name : company.nameEn}
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-[#66746d]">
               {locale === "vi" ? company.description : company.descriptionEn}

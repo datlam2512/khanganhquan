@@ -9,6 +9,7 @@ export function CompanyContact({
   locale: Locale;
   company: {
     name: string;
+    nameEn: string;
     email: string;
     phone: string;
     website: string;
@@ -24,7 +25,7 @@ export function CompanyContact({
               {locale === "vi" ? "Thông tin liên hệ" : "Company contact"}
             </div>
             <h2 className="heading-display mt-3 text-3xl font-extrabold leading-tight tracking-[-.04em] md:text-4xl">
-              {company.name}
+              {locale === "vi" ? company.name : company.nameEn}
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-white/65">
               {locale === "vi"
@@ -52,9 +53,9 @@ export function CompanyContact({
               <div className="mt-5 text-[10px] font-extrabold uppercase tracking-[.15em] text-[#87938c]">
                 Phone
               </div>
-              <div className="mt-2 text-base font-extrabold text-[#193b27]">
-                {company.phone}
-              </div>
+              <div className="mt-2 whitespace-pre-line text-base font-extrabold text-[#193b27]">
+  {company.phone}
+</div>
             </a>
             <a
               href={`mailto:${company.email}`}
