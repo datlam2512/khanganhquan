@@ -42,6 +42,7 @@ export default function Login() {
         email,
         password,
       });
+      
       if (authError) {
         setError(authError.message);
         return;
@@ -55,6 +56,7 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+
   }
 
   return (
