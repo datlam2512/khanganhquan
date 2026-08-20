@@ -8,7 +8,7 @@ import {
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Category, Product, Project } from "@/lib/types";
 import type { HeroSlide } from "@/components/public/hero";
-
+import type { Locale } from "@/lib/types";
 /**
  * Next.js throws a special internal error to bail a route out of static
  * generation into dynamic rendering whenever it touches a "dynamic API"
@@ -44,7 +44,9 @@ function imageUrl(path: string | null | undefined, bucket: string) {
   return url;
 }
 
-export const getHeroSlides = cache(async function getHeroSlides(): Promise<HeroSlide[]> {
+export const getHeroSlides = cache(async function getHeroSlides(): Promise<
+  HeroSlide[]
+> {
   const fallback: HeroSlide[] = [];
   if (!hasSupabaseConfig()) return fallback;
   try {
@@ -66,9 +68,11 @@ export const getHeroSlides = cache(async function getHeroSlides(): Promise<HeroS
   } catch {
     return fallback;
   }
-})
+});
 
-export const getCategories = cache(async function getCategories(): Promise<Category[]> {
+export const getCategories = cache(async function getCategories(): Promise<
+  Category[]
+> {
   if (!hasSupabaseConfig()) {
     return demoCategories;
   }
@@ -78,7 +82,8 @@ export const getCategories = cache(async function getCategories(): Promise<Categ
 
     const { data, error } = await supabase
       .from("categories")
-      .select(`
+      .select(
+        `
         id,
         slug,
         name_vi,
@@ -87,7 +92,8 @@ export const getCategories = cache(async function getCategories(): Promise<Categ
         description_en,
         image,
         published
-      `)
+      `,
+      )
       .eq("published", true);
 
     if (error) {
@@ -121,10 +127,14 @@ export const getCategories = cache(async function getCategories(): Promise<Categ
     console.error("Error loading categories:", error);
     return demoCategories;
   }
-})
+});
 
 export const getProducts = cache(async function getProducts(
-  options: { search?: string; category?: string } = {},
+  options: {
+    search?: string;
+    category?: string;
+    locale?: Locale;
+  } = {},
 ): Promise<Product[]> {
   const normalizeText = (value: string) =>
     value
@@ -132,10 +142,13 @@ export const getProducts = cache(async function getProducts(
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
 
-  const demoFilter = (): Product[] => {
-    const q = normalizeText(options.search?.trim() ?? "");
+  const search = normalizeText(options.search?.trim() ?? "");
 
+  const demoFilter = (): Product[] => {
     return demoProducts.filter((p) => {
+      // ============================
+      // CATEGORY FILTER
+      // ============================
       if (options.category) {
         const category = demoCategories.find(
           (c) => c.slug === options.category,
@@ -146,57 +159,25 @@ export const getProducts = cache(async function getProducts(
         }
       }
 
-      if (!q) {
-        return true;
+      // ============================
+      // PRODUCT NAME SEARCH ONLY
+      // ============================
+      if (search) {
+        const productName =
+          options.locale === "en"
+            ? p.nameEn
+            : p.name;
+
+        return normalizeText(productName).includes(search);
       }
 
-      const specText = [...p.specGroupsVi, ...p.specGroupsEn]
-        .map((group) => {
-          const rows = (group.rows ?? []).flatMap((row) =>
-            Array.isArray(row) ? row : [row],
-          );
-
-          const nestedGroups = (group.groups ?? []).flatMap((nested) => [
-            nested.name ?? "",
-            ...(nested.items ?? []).flatMap((item) =>
-              Array.isArray(item) ? item : [item],
-            ),
-          ]);
-
-          return [
-            group.title ?? "",
-            group.content ?? "",
-            ...(group.columns ?? []),
-            ...rows,
-            ...nestedGroups,
-          ].join(" ");
-        })
-        .join(" ");
-
-      const haystack = normalizeText(
-        [
-          p.name,
-          p.nameEn,
-          p.code,
-          p.short,
-          p.shortEn,
-          p.description,
-          p.descriptionEn,
-          p.material,
-          p.materialEn,
-          specText,
-        ].join(" "),
-      );
-
-      return haystack.includes(q);
+      return true;
     });
   };
 
-  /*
-   * ===========================================================
-   * NO SUPABASE
-   * ===========================================================
-   */
+  // ============================================================
+  // NO SUPABASE
+  // ============================================================
 
   if (!hasSupabaseConfig()) {
     return demoFilter();
@@ -205,11 +186,9 @@ export const getProducts = cache(async function getProducts(
   try {
     const supabase = createPublicClient();
 
-    /*
-     * =========================================================
-     * 1. PRODUCTS
-     * =========================================================
-     */
+    // ==========================================================
+    // 1. PRODUCTS QUERY
+    // ==========================================================
 
     let query = supabase
       .from("products")
@@ -230,16 +209,14 @@ export const getProducts = cache(async function getProducts(
         spec_groups_vi,
         spec_groups_en,
         published
-      `,
+        `,
       )
       .eq("published", true)
       .order("created_at", { ascending: false });
 
-    /*
-     * =========================================================
-     * 2. CATEGORY FILTER
-     * =========================================================
-     */
+    // ==========================================================
+    // 2. CATEGORY FILTER
+    // ==========================================================
 
     if (options.category) {
       const categoryResult = await supabase
@@ -249,7 +226,11 @@ export const getProducts = cache(async function getProducts(
         .maybeSingle();
 
       if (categoryResult.error) {
-        console.error("getProducts category error:", categoryResult.error);
+        console.error(
+          "getProducts category error:",
+          categoryResult.error,
+        );
+
         return demoFilter();
       }
 
@@ -257,14 +238,15 @@ export const getProducts = cache(async function getProducts(
         return [];
       }
 
-      query = query.eq("category_id", categoryResult.data.id);
+      query = query.eq(
+        "category_id",
+        categoryResult.data.id,
+      );
     }
 
-    /*
-     * =========================================================
-     * 3. GET PRODUCTS
-     * =========================================================
-     */
+    // ==========================================================
+    // 3. GET PRODUCTS
+    // ==========================================================
 
     const { data, error } = await query;
 
@@ -277,66 +259,73 @@ export const getProducts = cache(async function getProducts(
       return [];
     }
 
-    /*
-     * =========================================================
-     * 4. GET PRODUCT IMAGES
-     * =========================================================
-     */
+    // ==========================================================
+    // 4. GET PRODUCT IMAGES
+    // ==========================================================
 
     const productIds = data.map((product) => product.id);
-    const { data: imageData, error: imageError } = await supabase
+
+    const { data: imageData } = await supabase
       .from("product_images")
       .select(
         `
-    id,
-    product_id,
-    image_url,
-    alt_vi,
-    alt_en,
-    sort_order,
-    is_primary
-  `,
+        id,
+        product_id,
+        image_url,
+        alt_vi,
+        alt_en,
+        sort_order,
+        is_primary
+        `,
       )
       .in("product_id", productIds)
       .order("sort_order", { ascending: true });
 
-    /*
-     * =========================================================
-     * 5. GROUP IMAGES
-     * =========================================================
-     */
+    // ==========================================================
+    // 5. GROUP IMAGES
+    // ==========================================================
 
-    const imagesByProduct = new Map<string, Product["images"]>();
+    const imagesByProduct = new Map<
+      string,
+      Product["images"]
+    >();
 
     for (const image of imageData ?? []) {
-      const current = imagesByProduct.get(image.product_id) ?? [];
+      const current =
+        imagesByProduct.get(image.product_id) ?? [];
 
       current.push({
         id: image.id,
         productId: image.product_id,
-        imageUrl: imageUrl(image.image_url, "product-images") ?? "",
+        imageUrl:
+          imageUrl(
+            image.image_url,
+            "product-images",
+          ) ?? "",
         altVi: image.alt_vi ?? "",
         altEn: image.alt_en ?? "",
         sortOrder: image.sort_order ?? 0,
         isPrimary: Boolean(image.is_primary),
       });
 
-      imagesByProduct.set(image.product_id, current);
+      imagesByProduct.set(
+        image.product_id,
+        current,
+      );
     }
-    /*
-     * =========================================================
-     * 6. MAP SUPABASE -> Product
-     * =========================================================
-     */
+
+    // ==========================================================
+    // 6. MAP SUPABASE -> PRODUCT
+    // ==========================================================
 
     let mapped: Product[] = data.map((p) => {
-      const images = imagesByProduct.get(p.id) ?? [];
+      const images =
+        imagesByProduct.get(p.id) ?? [];
 
       return {
         id: p.id,
         slug: p.slug,
         code: p.code ?? "",
-
         categoryId: p.category_id,
 
         name: p.name_vi ?? "",
@@ -351,78 +340,74 @@ export const getProducts = cache(async function getProducts(
         material: p.material_vi ?? "",
         materialEn: p.material_en ?? "",
 
-        specGroupsVi: Array.isArray(p.spec_groups_vi) ? p.spec_groups_vi : [],
+        specGroupsVi: Array.isArray(p.spec_groups_vi)
+          ? p.spec_groups_vi
+          : [],
 
-        specGroupsEn: Array.isArray(p.spec_groups_en) ? p.spec_groups_en : [],
+        specGroupsEn: Array.isArray(p.spec_groups_en)
+          ? p.spec_groups_en
+          : [],
 
         images,
-
         published: Boolean(p.published),
       };
     });
 
-    /*
-     * =========================================================
-     * 7. SEARCH SUPABASE DATA
-     * =========================================================
-     */
+    // ==========================================================
+    // 7. SEARCH BY PRODUCT NAME ONLY
+    // ==========================================================
+if (search) {
+  mapped = mapped.filter((product) => {
+    const productName =
+      options.locale === "en"
+        ? product.nameEn
+        : product.name;
 
-    const search = options.search?.trim()
-      ? normalizeText(options.search.trim())
-      : "";
+    const normalizedName = normalizeText(productName);
 
-    if (search) {
-      mapped = mapped.filter((product) => {
-        const specText = [
-          JSON.stringify(product.specGroupsVi),
-          JSON.stringify(product.specGroupsEn),
-        ].join(" ");
+    // Tìm theo từ, không tìm substring nằm giữa một từ khác
+    const words = normalizedName.split(/\s+/);
 
-        const haystack = [
-          product.name,
-          product.nameEn,
-          product.code,
-          product.short,
-          product.shortEn,
-          product.description,
-          product.descriptionEn,
-          product.material,
-          product.materialEn,
-          specText,
-        ]
-          .join(" ")
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-
-        return haystack.includes(search);
-      });
-    }
+    return words.some((word) => word.startsWith(search));
+  });
+}
 
     return mapped;
   } catch (error) {
-    if (isNextDynamicBailout(error)) throw error;
-    console.error("getProducts exception:", error);
+    if (isNextDynamicBailout(error)) {
+      throw error;
+    }
+
+    console.error(
+      "getProducts exception:",
+      error,
+    );
 
     return demoFilter();
   }
-})
+});
 
-export const getProduct = cache(async function getProduct(slug: string): Promise<Product | undefined> {
+export const getProduct = cache(async function getProduct(
+  slug: string,
+): Promise<Product | undefined> {
   const products = await getProducts();
   const lower = slug.toLowerCase();
   return (
     products.find((p) => p.slug === slug) ??
     products.find((p) => p.slug.toLowerCase() === lower)
   );
-})
+});
 
-export const getProductById = cache(async function getProductById(id: string): Promise<Product | undefined> {
+export const getProductById = cache(async function getProductById(
+  id: string,
+): Promise<Product | undefined> {
   const products = await getProducts();
   return products.find((p) => p.id === id);
-})
+});
 
-export const getProjects = cache(async function getProjects(): Promise<Project[]> {
+export const getProjects = cache(async function getProjects(): Promise<
+  Project[]
+> {
   if (!hasSupabaseConfig())
     return demoProjects.map((p) => ({
       ...p,
@@ -480,13 +465,13 @@ export const getProjects = cache(async function getProjects(): Promise<Project[]
       gallery: p.gallery?.length ? p.gallery : [p.coverImage],
     }));
   }
-})
+});
 
 export const getProject = cache(async function getProject(slug: string) {
   const list = await getProjects();
   const project = list.find((p) => p.slug === slug);
   return project;
-})
+});
 
 export const getCompany = cache(async function getCompany() {
   if (!hasSupabaseConfig()) return demoCompany;
@@ -515,7 +500,7 @@ export const getCompany = cache(async function getCompany() {
   } catch {
     return demoCompany;
   }
-})
+});
 
 export type Partner = {
   id: string;
@@ -527,7 +512,9 @@ export type Partner = {
   published: boolean;
 };
 
-export const getPartners = cache(async function getPartners(): Promise<Partner[]> {
+export const getPartners = cache(async function getPartners(): Promise<
+  Partner[]
+> {
   const demo: Partner[] = [
     {
       id: "itron",
@@ -652,4 +639,4 @@ export const getPartners = cache(async function getPartners(): Promise<Partner[]
   } catch {
     return demo;
   }
-})
+});

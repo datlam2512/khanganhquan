@@ -58,9 +58,19 @@ export default async function Home({ params }: HomeProps) {
             <div className="">
               <div className="eyebrow">{t.sections.about}</div>
               <h2 className="heading-display mt-4 max-w-xl text-4xl font-extrabold leading-[1.03] text-[#103420] md:text-5xl">
-                Kết nối thiết bị,
-                <span className="text-[#11823b]"> vật tư</span> và nhu cầu kỹ
-                thuật.
+                {locale === "vi" ? (
+                  <>
+                    Kết nối thiết bị,
+                    <span className="text-[#11823b]"> vật tư</span> và nhu cầu
+                    kỹ thuật.
+                  </>
+                ) : (
+                  <>
+                    Connecting equipment,
+                    <span className="text-[#11823b]"> materials</span> and
+                    technical needs.
+                  </>
+                )}
               </h2>
             </div>
             <div className="max-w-2xl">
@@ -87,14 +97,20 @@ export default async function Home({ params }: HomeProps) {
         <section className="border-y border-[#e7eee9] bg-[#f7faf8] py-20 md:py-24">
           <div className="container-kaq grid lg:grid-cols-[.95fr_1.05fr]">
             <div className="border-b border-[#e7eee9] py-16 lg:border-b-0 lg:border-r lg:pr-14 lg:py-20">
-              <div className="eyebrow">Khang Anh Quân</div>
+              <div className="eyebrow">
+                {locale === "vi" ? "Khang Anh Quân" : "Khang Anh Quân"}
+              </div>
+
               <h3 className="heading-display mt-4 text-3xl font-extrabold leading-tight text-[#163a26] md:text-4xl">
-                Tập trung vào những gì khách hàng cần để triển khai hệ thống
-                hiệu quả.
+                {locale === "vi"
+                  ? "Tập trung vào những gì khách hàng cần để triển khai hệ thống hiệu quả."
+                  : "Focused on what customers need to deploy effective technical systems."}
               </h3>
+
               <p className="mt-5 max-w-xl text-sm leading-7 text-[#6a776f]">
-                Thiết bị công nghiệp, vật tư đường ống, van và giải pháp phục vụ
-                các hệ thống kỹ thuật.
+                {locale === "vi"
+                  ? "Thiết bị công nghiệp, vật tư đường ống, van và giải pháp phục vụ các hệ thống kỹ thuật."
+                  : "Industrial equipment, piping materials, valves and solutions for technical systems."}
               </p>
             </div>
 
@@ -102,23 +118,33 @@ export default async function Home({ params }: HomeProps) {
               {[
                 [
                   Building2,
-                  "Danh mục rõ ràng",
-                  "Khách hàng dễ tìm nhóm thiết bị phù hợp.",
+                  locale === "vi" ? "Danh mục rõ ràng" : "Clear categories",
+                  locale === "vi"
+                    ? "Khách hàng dễ tìm nhóm thiết bị phù hợp."
+                    : "Customers can easily find the right equipment category.",
                 ],
                 [
                   ShieldCheck,
-                  "Thông tin minh bạch",
-                  "Nội dung sản phẩm được quản lý tập trung.",
+                  locale === "vi"
+                    ? "Thông tin minh bạch"
+                    : "Transparent information",
+                  locale === "vi"
+                    ? "Nội dung sản phẩm được quản lý tập trung."
+                    : "Product information is centrally managed.",
                 ],
                 [
                   Wrench,
-                  "Hỗ trợ kỹ thuật",
-                  "Thông tin được trình bày theo nhu cầu thực tế.",
+                  locale === "vi" ? "Hỗ trợ kỹ thuật" : "Technical support",
+                  locale === "vi"
+                    ? "Thông tin được trình bày theo nhu cầu thực tế."
+                    : "Information is presented according to practical requirements.",
                 ],
                 [
                   Handshake,
-                  "Đồng hành dự án",
-                  "Kết nối sản phẩm với nhu cầu triển khai.",
+                  locale === "vi" ? "Đồng hành dự án" : "Project support",
+                  locale === "vi"
+                    ? "Kết nối sản phẩm với nhu cầu triển khai."
+                    : "Connecting products with project requirements.",
                 ],
               ].map(([Icon, title, desc], idx) => {
                 const C = Icon as typeof Building2;
@@ -306,12 +332,15 @@ export default async function Home({ params }: HomeProps) {
             <div className="border-b border-white/10 py-16 lg:border-b-0 lg:border-r lg:py-20 lg:pr-14">
               <div className="eyebrow text-[#b8e7c6]">Why KAQ</div>
               <h2 className="heading-display mt-4 text-3xl font-extrabold leading-tight md:text-4xl">
-                Tập trung vào những gì khách hàng cần để triển khai hệ thống
-                hiệu quả.
+                {locale === "vi"
+                  ? "Tập trung vào những gì khách hàng cần để triển khai hệ thống hiệu quả."
+                  : "Focused on what customers need for effective system deployment."}
               </h2>
+
               <p className="mt-5 max-w-xl text-sm leading-7 text-white/65">
-                Website ưu tiên cho khách hàng tìm hiểu sản phẩm, dự án và cách
-                liên hệ nhanh chóng.
+                {locale === "vi"
+                  ? "Website ưu tiên cho khách hàng tìm hiểu sản phẩm, dự án và cách liên hệ nhanh chóng."
+                  : "A website designed to help customers quickly explore products, projects and contact information."}
               </p>
             </div>
 
@@ -352,7 +381,7 @@ export default async function Home({ params }: HomeProps) {
         </section>
       </Reveal>
 
-      <PartnersMarquee partners={partners} />
+      <PartnersMarquee partners={partners} locale={locale} />
 
       <CompanyContact locale={locale} company={company} />
     </main>

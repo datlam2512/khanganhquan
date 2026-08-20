@@ -74,10 +74,11 @@ export function Header({ locale }: { locale: Locale }) {
 
             <div className="hidden sm:block">
               <div className="font-display text-[13px] font-extrabold tracking-[-.02em] text-[#123b24]">
-                KHANG ANH QUÂN
+                {locale === "vi" ? "KHANG ANH QUÂN" : "KHANG ANH QUAN"}
               </div>
+
               <div className="mt-1 text-[9px] font-bold tracking-[.18em] text-[#7c8982]">
-                CÔNG TY TNHH
+                {locale === "vi" ? "CÔNG TY TNHH" : "LIMITED LIABILITY COMPANY"}
               </div>
             </div>
           </Link>
