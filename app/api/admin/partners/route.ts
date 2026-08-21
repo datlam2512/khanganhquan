@@ -55,7 +55,7 @@ export async function PUT(req: Request) {
   try {
     const s = await requireAdmin();
     if (!s) return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
-    const body = Schema.extend({ id: z.string().uuid() }).parse(await req.json());
+    const body = Schema.extend({ id: z.string().min(1) }).parse(await req.json());
     const { id, ...values } = body;
     const { data, error } = await s.from("partners").update(values).eq("id", id).select().single();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -76,7 +76,7 @@ export async function DELETE(req: Request) {
   try {
     const s = await requireAdmin();
     if (!s) return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
-    const { id } = z.object({ id: z.string().uuid() }).parse(await req.json());
+    const { id } = z.object({ id: z.string().min(1) }).parse(await req.json());
     const { error } = await s.from("partners").delete().eq("id", id);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ ok: true });
